@@ -187,6 +187,10 @@ async function loadExpenses() {
 
       <br>
 
+        <button onclick="editExpense(${expense.id})">
+          Editar
+        </button>
+
         <button onclick="deleteExpense(${expense.id})">
           Excluir
         </button>
@@ -224,6 +228,45 @@ async function loadExpenses() {
   renderChart(expenses);
 
   renderCategoryBudgets(expenses);
+}
+async function editExpense(id) {
+
+    const description =
+        prompt("Nova descrição:");
+
+    if (!description) return;
+
+    const category =
+        prompt("Nova categoria:");
+
+    const value =
+        prompt("Novo valor:");
+
+    const expenseDate =
+        prompt("Nova data (AAAA-MM-DD):");
+
+    await fetch(
+        `${API_URL}/${id}`,
+        {
+            method: "PUT",
+
+            headers: {
+                "Content-Type":
+                "application/json"
+            },
+
+            body: JSON.stringify({
+
+                description,
+                category,
+                value,
+                expenseDate
+
+            })
+        }
+    );
+
+    loadExpenses();
 }
 
 async function deleteExpense(id) {
@@ -265,3 +308,35 @@ form.addEventListener("submit", async (event) => {
 });
 
 loadExpenses();
+
+document
+.getElementById("exportPdf")
+.addEventListener(
+"click",
+async () => {
+
+    const response =
+        await fetch(
+            `${API_URL}/pdf`
+        );
+
+    const blob =
+        await response.blob();
+
+    const url =
+        window.URL.createObjectURL(blob);
+
+    const a =
+        document.createElement("a");
+
+    a.href = url;
+
+    a.download =
+        "Resumo_Casamento.pdf";
+
+    a.click();
+
+    window.URL
+        .revokeObjectURL(url);
+
+});

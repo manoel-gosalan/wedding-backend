@@ -13,6 +13,10 @@ public class ExpenseMapper {
         expense.setCategory(dto.getCategory());
         expense.setValue(dto.getValue());
 
+        expense.setExpenseDate(
+                dto.getExpenseDate()
+        );
+
         return expense;
     }
 }

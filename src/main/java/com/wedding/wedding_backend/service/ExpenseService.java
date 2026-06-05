@@ -1,5 +1,6 @@
 package com.wedding.wedding_backend.service;
 
+import com.wedding.wedding_backend.dto.ExpenseDTO;
 import com.wedding.wedding_backend.entity.Expense;
 import com.wedding.wedding_backend.repository.ExpenseRepository;
 import org.springframework.stereotype.Service;
@@ -26,9 +27,7 @@ public class ExpenseService {
     public void delete(Long id) {
         repository.deleteById(id);
     }
-},
-
-public Expense update(
+    public Expense update(
         Long id,
         ExpenseDTO dto
 ) {
@@ -54,4 +53,5 @@ public Expense update(
     );
 
     return repository.save(expense);
+}
 }

@@ -1,2 +1,2 @@
-package com.wedding.wedding_backend.repository;
+package com.wedding.wedding_backend.exception;
 
