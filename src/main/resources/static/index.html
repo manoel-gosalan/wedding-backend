@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Wedding Planner</title>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<h1>Planejador de Casamento</h1>
+
+<form id="expenseForm">
+
+    <input
+            type="text"
+            id="description"
+            placeholder="Descrição"
+            required
+    >
+
+    <input
+            type="text"
+            id="category"
+            placeholder="Categoria"
+            required
+    >
+
+    <input
+            type="number"
+            id="value"
+            placeholder="Valor"
+            required
+    >
+    <input
+    type="date"
+    id="expenseDate"
+    required
+>
+
+    <button type="submit">
+       Adicionar
+    </button>
+
+</form>
+
+<hr>
+<div class="dashboard">
+
+    <div class="metric">
+        <h3>Total Gasto</h3>
+        <p id="totalGasto">R$ 0</p>
+    </div>
+
+    <div class="metric">
+        <h3>Meta Casamento</h3>
+        <p id="metaCasamento">R$ 30000</p>
+    </div>
+
+    <div class="metric">
+        <h3>Falta</h3>
+        <p id="falta">R$ 30000</p>
+    </div>
+    <div class="progress-container">
+
+    <div class="progress-info">
+        <span>Progresso do orçamento</span>
+        <span id="percentual">0%</span>
+    </div>
+
+    <div class="progress-bar">
+        <div id="progressFill" class="progress-fill"></div>
+    </div>
+    <div class="chart-container">
+
+    <h2>Gastos por Categoria</h2>
+
+    <canvas id="categoryChart"></canvas>
+
+</div>
+    <h2>Orçamento por Categoria</h2>
+
+<div id="categoryBudgets"></div>
+</div>
+
+</div>
+<div class="metric">
+
+    <h3>Economia Mensal</h3>
+
+    <p id="economiaMensal">
+        R$ 0
+    </p>
+
+</div>
+<h2 id="total">
+    Total: R$ 0
+</h2>
+<div id="expenses"></div>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="app.js"></script>
+
+</body>
+</html>
