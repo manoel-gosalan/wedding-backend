@@ -72,7 +72,8 @@ R$ 1.500
 */
 
 function updateGoalAnalysis(total){
-
+    console.log("FUNÇÃO CHAMADA");
+    console.log(currentPlan);
     if(!currentPlan){
         return;
     }
@@ -134,23 +135,40 @@ function updateGoalAnalysis(total){
     const requiredPerMonth =
         falta / monthsRemaining;
 
-    if(monthlySaving >= requiredPerMonth){
+    const difference =
+        monthlySaving
+        - requiredPerMonth;
 
+    const goalStatus =
         document.getElementById(
             "goalStatus"
-        ).textContent =
-            `✅ Meta alcançável`;
+        );
+
+    if(difference > 0){
+
+        goalStatus.innerHTML = `
+        <span style="color:#22c55e">
+            +${formatCurrency(difference)}/mês
+        </span>
+        <br>
+        <small>
+            Acima do necessário
+        </small>
+    `;
 
     }else{
 
-        const extra =
-            requiredPerMonth
-            - monthlySaving;
-
-        document.getElementById(
-            "goalStatus"
-        ).textContent =
-            `❌ Faltam ${formatCurrency(extra)}/mês`;
+        goalStatus.innerHTML = `
+        <span style="color:#ef4444">
+            ${formatCurrency(
+            Math.abs(difference)
+        )}/mês
+        </span>
+        <br>
+        <small>
+            Precisam guardar mais
+        </small>
+    `;
     }
 }
 
@@ -340,14 +358,9 @@ async function loadExpenses() {
         -
         total;
   updateGoalAnalysis(total);
-  const MESES_RESTANTES = 12;
-
-  const economiaMensal = falta / MESES_RESTANTES;
 
   const percentual = (total / targetBudget) * 100;
 
-  document.getElementById("economiaMensal").textContent =
-    formatCurrency(economiaMensal);
 
   document.getElementById("percentual").textContent =
     `${percentual.toFixed(1)}%`;
@@ -570,19 +583,7 @@ function applyFilters(){
     renderExpenses(filtered);
 }
 
-const monthlySaving =
-    Number(
-        document.getElementById(
-            "monthlySaving"
-        ).value
-    );
 
-const weddingDate =
-    new Date(
-        document.getElementById(
-            "weddingDate"
-        ).value
-    );
 
 const PLAN_API =
     "http://localhost:8080/api/plan";
@@ -595,56 +596,65 @@ document
     );
 
 async function savePlan(){
+
     console.log("SAVE PLAN CHAMADO");
 
     const targetBudget =
-      Number(
-          document.getElementById(
-              "targetBudget"
-          ).value
-      );
+        Number(
+            document.getElementById(
+                "targetBudget"
+            ).value
+        );
 
-  const currentSavings =
-      Number(
-          document.getElementById(
-              "currentSavings"
-          ).value
-      );
+    const currentSavings =
+        Number(
+            document.getElementById(
+                "currentSavings"
+            ).value
+        );
 
+    const monthlySaving =
+        Number(
+            document.getElementById(
+                "monthlySaving"
+            ).value
+        );
 
+    const weddingDate =
+        document.getElementById(
+            "weddingDate"
+        ).value;
 
     console.log({
         targetBudget,
         currentSavings,
+        monthlySaving,
+        weddingDate
     });
 
-  await fetch(
-      PLAN_API,
-      {
-        method:"POST",
+    await fetch(
+        PLAN_API,
+        {
+            method: "POST",
 
-        headers:{
-          "Content-Type":
-              "application/json"
-        },
+            headers: {
+                "Content-Type":
+                    "application/json"
+            },
 
-        body:JSON.stringify({
-
-          targetBudget,
-          currentSavings,
-          monthlySaving,
-          weddingDate
-
-        })
-      }
-  );
+            body: JSON.stringify({
+                targetBudget,
+                currentSavings,
+                monthlySaving,
+                weddingDate
+            })
+        }
+    );
 
     await loadPlan();
     await loadExpenses();
 
-    alert(
-        "Planejamento salvo!"
-    );
+    alert("Planejamento salvo!");
 }
 
 async function loadPlan(){

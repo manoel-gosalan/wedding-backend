@@ -290,3 +290,15 @@ button:hover{
     margin-top:20px;
 
 }
+
+#goalStatus span{
+    font-size: 32px;
+    font-weight: 700;
+}
+
+#goalStatus small{
+    display:block;
+    margin-top:8px;
+    color:#64748b;
+    font-size:14px;
+}
