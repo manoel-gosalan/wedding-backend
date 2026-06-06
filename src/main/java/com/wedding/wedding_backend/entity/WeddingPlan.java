@@ -26,6 +26,12 @@ public class WeddingPlan {
         return id;
     }
 
+    public void setId(
+            Long id
+    ){
+        this.id = id;
+    }
+
     public Double getTargetBudget() {
         return targetBudget;
     }

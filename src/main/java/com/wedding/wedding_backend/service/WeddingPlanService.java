@@ -20,10 +20,35 @@ public class WeddingPlanService {
     public WeddingPlan save(
             WeddingPlan plan
     ){
+
+        WeddingPlan existing =
+                findLatest();
+
+        if(existing != null){
+
+            plan.setId(
+                    existing.getId()
+            );
+        }
+
         return repository.save(plan);
     }
 
     public List<WeddingPlan> findAll(){
         return repository.findAll();
+    }
+
+    public WeddingPlan findLatest(){
+
+        List<WeddingPlan> plans =
+                repository.findAll();
+
+        if(plans.isEmpty()){
+            return null;
+        }
+
+        return plans.get(
+                plans.size() - 1
+        );
     }
 }
