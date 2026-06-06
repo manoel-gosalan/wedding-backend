@@ -5,6 +5,7 @@ const form = document.getElementById("expenseForm");
 
 const META_CASAMENTO = 30000;
 let categoryChart = null;
+let allExpenses = [];
 const CATEGORY_BUDGETS = {
   comida: 10000,
 
@@ -159,6 +160,7 @@ async function loadExpenses() {
   const response = await fetch(API_URL);
 
   const expenses = await response.json();
+  allExpenses = expenses;
 
   expensesDiv.innerHTML = "";
 
@@ -230,43 +232,45 @@ async function loadExpenses() {
   renderCategoryBudgets(expenses);
 }
 async function editExpense(id) {
+  const description = prompt("Nova descrição:");
 
-    const description =
-        prompt("Nova descrição:");
+  if (!description) return;
 
-    if (!description) return;
+  const category = prompt("Nova categoria:");
 
-    const category =
-        prompt("Nova categoria:");
+  const value = prompt("Novo valor:");
 
-    const value =
-        prompt("Novo valor:");
+  const expenseDate = prompt("Nova data (AAAA-MM-DD):");
 
-    const expenseDate =
-        prompt("Nova data (AAAA-MM-DD):");
+  await fetch(`${API_URL}/${id}`, {
+    method: "PUT",
 
-    await fetch(
-        `${API_URL}/${id}`,
-        {
-            method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+    },
 
-            headers: {
-                "Content-Type":
-                "application/json"
-            },
+    body: JSON.stringify({
+      description,
+      category,
+      value,
+      expenseDate,
+    }),
+  });
+  const categoryFilter = document.getElementById("categoryFilter");
 
-            body: JSON.stringify({
+  const categories = [...new Set(expenses.map((e) => e.category))];
 
-                description,
-                category,
-                value,
-                expenseDate
+  categoryFilter.innerHTML = '<option value="">Todas categorias</option>';
 
-            })
-        }
-    );
+  categories.forEach((category) => {
+    categoryFilter.innerHTML += `
+        <option value="${category}">
+            ${category}
+        </option>
+    `;
+  });
 
-    loadExpenses();
+  loadExpenses();
 }
 
 async function deleteExpense(id) {
@@ -309,34 +313,117 @@ form.addEventListener("submit", async (event) => {
 
 loadExpenses();
 
-document
-.getElementById("exportPdf")
-.addEventListener(
-"click",
-async () => {
+function renderExpenses(expenses) {
+  expensesDiv.innerHTML = "";
 
-    const response =
-        await fetch(
-            `${API_URL}/pdf`
-        );
+  expenses.forEach((expense) => {
+    expensesDiv.innerHTML += `
+            <div class="card">
 
-    const blob =
-        await response.blob();
+                <h3>
+                    ${expense.description}
+                </h3>
 
-    const url =
-        window.URL.createObjectURL(blob);
+                <p>
+                    ${getCategoryIcon(expense.category)}
 
-    const a =
-        document.createElement("a");
+                    ${expense.category}
+                </p>
 
-    a.href = url;
+                <strong>
+                    ${formatCurrency(expense.value)}
+                </strong>
 
-    a.download =
-        "Resumo_Casamento.pdf";
+                <p>
+                    📅 ${expense.expenseDate}
+                </p>
 
-    a.click();
+                <button
+                    onclick="editExpense(${expense.id})"
+                >
+                    Editar
+                </button>
 
-    window.URL
-        .revokeObjectURL(url);
+                <button
+                    onclick="deleteExpense(${expense.id})"
+                >
+                    Excluir
+                </button>
 
+            </div>
+        `;
+  });
+}
+
+document.getElementById("exportPdf").addEventListener("click", async () => {
+  const response = await fetch(`${API_URL}/pdf`);
+  console.log(response.status);
+  console.log(response.headers.get("content-type"));
+
+  const blob = await response.blob();
+
+  const url = window.URL.createObjectURL(blob);
+
+  const a = document.createElement("a");
+
+  a.href = url;
+
+  a.download = "Resumo_Casamento.pdf";
+
+  a.click();
+
+  window.URL.revokeObjectURL(url);
 });
+
+document
+.getElementById("searchInput")
+.addEventListener(
+"input",
+applyFilters
+);
+
+document
+.getElementById("categoryFilter")
+.addEventListener(
+"change",
+applyFilters
+);
+function applyFilters(){
+
+    const search =
+    document
+    .getElementById(
+        "searchInput"
+    )
+    .value
+    .toLowerCase();
+
+    const category =
+    document
+    .getElementById(
+        "categoryFilter"
+    )
+    .value;
+
+    const filtered =
+    allExpenses.filter(expense => {
+
+        const matchesSearch =
+
+        expense.description
+        .toLowerCase()
+        .includes(search);
+
+        const matchesCategory =
+
+        !category ||
+
+        expense.category === category;
+
+        return matchesSearch
+            &&
+            matchesCategory;
+    });
+
+    renderExpenses(filtered);
+}
