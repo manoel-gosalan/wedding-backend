@@ -3,9 +3,9 @@ const API_URL = "http://localhost:8080/api/expenses";
 const expensesDiv = document.getElementById("expenses");
 const form = document.getElementById("expenseForm");
 
-const META_CASAMENTO = 30000;
 let categoryChart = null;
 let allExpenses = [];
+let currentPlan = null;
 const CATEGORY_BUDGETS = {
   comida: 10000,
 
@@ -73,89 +73,85 @@ R$ 1.500
 
 function updateGoalAnalysis(total){
 
-  const monthlySaving =
-      Number(
-          document.getElementById(
-              "monthlySaving"
-          ).value
-      ) || 0;
+    if(!currentPlan){
+        return;
+    }
 
-  const weddingDateValue =
-      document.getElementById(
-          "weddingDate"
-      ).value;
+    const monthlySaving =
+        Number(
+            currentPlan.monthlySaving
+        ) || 0;
 
-  if(!weddingDateValue){
+    const weddingDateValue =
+        currentPlan.weddingDate;
 
-    document.getElementById(
-        "goalStatus"
-    ).textContent =
-        "Informe a data do casamento";
+    if(!weddingDateValue){
 
-    return;
-  }
+        document.getElementById(
+            "goalStatus"
+        ).textContent =
+            "Informe a data do casamento";
 
-  const weddingDate =
-      new Date(
-          weddingDateValue
-      );
+        return;
+    }
 
-  const today =
-      new Date();
+    const weddingDate =
+        new Date(
+            weddingDateValue
+        );
 
-  const monthsRemaining =
-      (
-          (weddingDate.getFullYear()
-              - today.getFullYear()) * 12
-      )
-      +
-      (
-          weddingDate.getMonth()
-          - today.getMonth()
-      );
+    const today =
+        new Date();
 
-  if(monthsRemaining <= 0){
+    const monthsRemaining =
+        (
+            (weddingDate.getFullYear()
+                - today.getFullYear()) * 12
+        )
+        +
+        (
+            weddingDate.getMonth()
+            - today.getMonth()
+        );
 
-    document.getElementById(
-        "goalStatus"
-    ).textContent =
-        "Data inválida";
+    if(monthsRemaining <= 0){
 
-    return;
-  }
+        document.getElementById(
+            "goalStatus"
+        ).textContent =
+            "Data inválida";
 
-  const falta =
-      META_CASAMENTO - total;
+        return;
+    }
 
-  const requiredPerMonth =
-      falta / monthsRemaining;
+    const falta =
+        currentPlan.targetBudget
+        -
+        currentPlan.currentSavings
+        -
+        total;
 
-  let status = "";
+    const requiredPerMonth =
+        falta / monthsRemaining;
 
-  if(
-      monthlySaving >=
-      requiredPerMonth
-  ){
+    if(monthlySaving >= requiredPerMonth){
 
-    status =
-        `✅ Meta alcançável
-            (${formatCurrency(requiredPerMonth)}/mês necessários)`;
+        document.getElementById(
+            "goalStatus"
+        ).textContent =
+            `✅ Meta alcançável`;
 
-  }else{
+    }else{
 
-    const extra =
-        requiredPerMonth
-        - monthlySaving;
+        const extra =
+            requiredPerMonth
+            - monthlySaving;
 
-    status =
-        `❌ Faltam
-            ${formatCurrency(extra)}
-            por mês`;
-  }
-
-  document.getElementById(
-      "goalStatus"
-  ).textContent = status;
+        document.getElementById(
+            "goalStatus"
+        ).textContent =
+            `❌ Faltam ${formatCurrency(extra)}/mês`;
+    }
 }
 
 function getCategoryIcon(category) {
@@ -283,6 +279,7 @@ function renderCategoryBudgets(expenses) {
 
 async function loadExpenses() {
   const response = await fetch(API_URL);
+    console.log(currentPlan);
 
   const expenses = await response.json();
   allExpenses = expenses;
@@ -326,13 +323,28 @@ async function loadExpenses() {
     `;
   });
 
-  const falta = META_CASAMENTO - total;
+    const targetBudget =
+        currentPlan
+            ? currentPlan.targetBudget
+            : 30000;
+
+    const currentSavings =
+        currentPlan
+            ? currentPlan.currentSavings
+            : 0;
+
+    const falta =
+        targetBudget
+        -
+        currentSavings
+        -
+        total;
   updateGoalAnalysis(total);
   const MESES_RESTANTES = 12;
 
   const economiaMensal = falta / MESES_RESTANTES;
 
-  const percentual = (total / META_CASAMENTO) * 100;
+  const percentual = (total / targetBudget) * 100;
 
   document.getElementById("economiaMensal").textContent =
     formatCurrency(economiaMensal);
@@ -346,7 +358,7 @@ async function loadExpenses() {
   document.getElementById("totalGasto").textContent = formatCurrency(total);
 
   document.getElementById("metaCasamento").textContent =
-    formatCurrency(META_CASAMENTO);
+    formatCurrency(targetBudget);
 
   document.getElementById("falta").textContent = formatCurrency(falta);
 
@@ -384,7 +396,12 @@ async function editExpense(id) {
   });
   const categoryFilter = document.getElementById("categoryFilter");
 
-  const categories = [...new Set(expenses.map((e) => e.category))];
+    const categories =
+        [...new Set(
+            allExpenses.map(
+                e => e.category
+            )
+        )];
 
   categoryFilter.innerHTML = '<option value="">Todas categorias</option>';
 
@@ -437,7 +454,6 @@ form.addEventListener("submit", async (event) => {
   loadExpenses();
 });
 
-loadExpenses();
 
 function renderExpenses(expenses) {
   expensesDiv.innerHTML = "";
@@ -567,3 +583,139 @@ const weddingDate =
             "weddingDate"
         ).value
     );
+
+const PLAN_API =
+    "http://localhost:8080/api/plan";
+
+document
+    .getElementById("savePlan")
+    .addEventListener(
+        "click",
+        savePlan
+    );
+
+async function savePlan(){
+    console.log("SAVE PLAN CHAMADO");
+
+    const targetBudget =
+      Number(
+          document.getElementById(
+              "targetBudget"
+          ).value
+      );
+
+  const currentSavings =
+      Number(
+          document.getElementById(
+              "currentSavings"
+          ).value
+      );
+
+
+
+    console.log({
+        targetBudget,
+        currentSavings,
+    });
+
+  await fetch(
+      PLAN_API,
+      {
+        method:"POST",
+
+        headers:{
+          "Content-Type":
+              "application/json"
+        },
+
+        body:JSON.stringify({
+
+          targetBudget,
+          currentSavings,
+          monthlySaving,
+          weddingDate
+
+        })
+      }
+  );
+
+    await loadPlan();
+    await loadExpenses();
+
+    alert(
+        "Planejamento salvo!"
+    );
+}
+
+async function loadPlan(){
+    console.log("LOAD PLAN CHAMADO");
+    const response =
+        await fetch(
+            PLAN_API
+        );
+
+    const plans =
+        await response.json();
+
+    if(plans.length === 0){
+        return;
+    }
+
+    currentPlan =
+        plans[plans.length - 1];
+
+    document.getElementById(
+        "targetBudget"
+    ).value =
+        currentPlan.targetBudget;
+
+    document.getElementById(
+        "currentSavings"
+    ).value =
+        currentPlan.currentSavings;
+
+    const savingsElement =
+        document.getElementById(
+            "currentSavingsValue"
+        );
+
+    if(savingsElement){
+
+        savingsElement.textContent =
+            formatCurrency(
+                currentPlan.currentSavings
+            );
+    }
+
+    document.getElementById(
+        "monthlySaving"
+    ).value =
+        currentPlan.monthlySaving;
+
+    document.getElementById(
+        "weddingDate"
+    ).value =
+        currentPlan.weddingDate;
+
+    document.getElementById(
+        "metaCasamento"
+    ).textContent =
+        formatCurrency(
+            currentPlan.targetBudget
+        );
+
+    document.getElementById(
+        "currentSavingsValue"
+    ).textContent =
+        formatCurrency(
+            currentPlan.currentSavings
+        );
+
+}
+(async () => {
+
+    await loadPlan();
+
+    await loadExpenses();
+
+})();
