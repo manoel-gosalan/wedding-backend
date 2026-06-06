@@ -32,6 +32,131 @@ function formatCurrency(value) {
     currency: "BRL",
   });
 }
+/*
+========================================================
+ANÁLISE FINANCEIRA DO CASAMENTO
+========================================================
+
+Objetivo:
+
+Verificar se o casal consegue atingir
+a meta financeira até a data do casamento.
+
+Exemplo:
+
+Meta:
+R$ 30.000
+
+Falta:
+R$ 20.000
+
+Meses restantes:
+10
+
+Necessário:
+R$ 2.000/mês
+
+Se conseguem guardar:
+
+R$ 2.500
+
+→ Meta alcançável
+
+Se conseguem guardar:
+
+R$ 1.500
+
+→ Faltam R$ 500/mês
+
+========================================================
+*/
+
+function updateGoalAnalysis(total){
+
+  const monthlySaving =
+      Number(
+          document.getElementById(
+              "monthlySaving"
+          ).value
+      ) || 0;
+
+  const weddingDateValue =
+      document.getElementById(
+          "weddingDate"
+      ).value;
+
+  if(!weddingDateValue){
+
+    document.getElementById(
+        "goalStatus"
+    ).textContent =
+        "Informe a data do casamento";
+
+    return;
+  }
+
+  const weddingDate =
+      new Date(
+          weddingDateValue
+      );
+
+  const today =
+      new Date();
+
+  const monthsRemaining =
+      (
+          (weddingDate.getFullYear()
+              - today.getFullYear()) * 12
+      )
+      +
+      (
+          weddingDate.getMonth()
+          - today.getMonth()
+      );
+
+  if(monthsRemaining <= 0){
+
+    document.getElementById(
+        "goalStatus"
+    ).textContent =
+        "Data inválida";
+
+    return;
+  }
+
+  const falta =
+      META_CASAMENTO - total;
+
+  const requiredPerMonth =
+      falta / monthsRemaining;
+
+  let status = "";
+
+  if(
+      monthlySaving >=
+      requiredPerMonth
+  ){
+
+    status =
+        `✅ Meta alcançável
+            (${formatCurrency(requiredPerMonth)}/mês necessários)`;
+
+  }else{
+
+    const extra =
+        requiredPerMonth
+        - monthlySaving;
+
+    status =
+        `❌ Faltam
+            ${formatCurrency(extra)}
+            por mês`;
+  }
+
+  document.getElementById(
+      "goalStatus"
+  ).textContent = status;
+}
 
 function getCategoryIcon(category) {
   const icons = {
@@ -202,6 +327,7 @@ async function loadExpenses() {
   });
 
   const falta = META_CASAMENTO - total;
+  updateGoalAnalysis(total);
   const MESES_RESTANTES = 12;
 
   const economiaMensal = falta / MESES_RESTANTES;
@@ -427,3 +553,17 @@ function applyFilters(){
 
     renderExpenses(filtered);
 }
+
+const monthlySaving =
+    Number(
+        document.getElementById(
+            "monthlySaving"
+        ).value
+    );
+
+const weddingDate =
+    new Date(
+        document.getElementById(
+            "weddingDate"
+        ).value
+    );

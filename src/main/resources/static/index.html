@@ -13,6 +13,18 @@
 <form id="expenseForm">
 
     <input
+            type="number"
+            id="monthlySaving"
+            placeholder="Quanto conseguem guardar por mês"
+    >
+
+    <input
+            type="date"
+            id="weddingDate"
+    >
+
+
+    <input
             type="text"
             id="description"
             placeholder="Descrição"
@@ -38,6 +50,7 @@
     required
 >
 
+
     <button type="submit">
     Adicionar
     </button>
@@ -52,7 +65,15 @@
 
 <hr>
 <div class="dashboard">
+    <div class="metric">
 
+        <h3>Status da Meta</h3>
+
+        <p id="goalStatus">
+            -
+        </p>
+
+    </div>
     <div class="metric">
         <h3>💰 Total Gasto</h3>
         <p id="totalGasto">R$ 0</p>
@@ -68,10 +89,7 @@
         <p id="falta">R$ 30000</p>
     </div>
 
-    <div class="metric">
-        <h3>📅 Economia Mensal</h3>
-        <p id="economiaMensal">R$ 0</p>
-    </div>
+
 
 </div>
 
