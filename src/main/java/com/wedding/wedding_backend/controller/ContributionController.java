@@ -4,6 +4,7 @@ import com.wedding.wedding_backend.entity.Contribution;
 import com.wedding.wedding_backend.service.ContributionService;
 import org.springframework.web.bind.annotation.*;
 
+import  java.math.BigDecimal;
 import java.util.List;
 
 @RestController
@@ -30,5 +31,10 @@ public class ContributionController {
     @DeleteMapping("/{id}")
     public void delete(@PathVariable Long id) {
         service.delete(id);
+    }
+
+    @GetMapping("/total")
+    public BigDecimal getTotalContributions() {
+        return service.getTotalContributions();
     }
 }
