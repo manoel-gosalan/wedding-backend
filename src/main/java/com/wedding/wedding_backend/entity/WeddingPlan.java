@@ -19,6 +19,8 @@ public class WeddingPlan {
 
     private LocalDate weddingDate;
 
+    private String currency;
+
     public WeddingPlan() {
     }
 
@@ -62,5 +64,13 @@ public class WeddingPlan {
 
     public void setWeddingDate(LocalDate weddingDate) {
         this.weddingDate = weddingDate;
+    }
+
+    public String getCurrency() {
+        return currency;
+    }
+
+    public void setCurrency(String currency) {
+        this.currency = currency;
     }
 }

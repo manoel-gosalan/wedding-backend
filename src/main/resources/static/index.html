@@ -10,6 +10,10 @@
 
 <h1>Planejador de Casamento</h1>
 
+<div id="exchangeRate">
+    €1 = R$ 6,40
+</div>
+
     <div class="planning-section">
 
         <input
@@ -29,6 +33,17 @@
                 id="monthlySaving"
                 placeholder="Quanto conseguem guardar por mês"
         >
+        <select id="currency">
+
+            <option value="BRL">
+                Real (R$)
+            </option>
+
+            <option value="EUR">
+                Euro (€)
+            </option>
+
+        </select>
 
         <input
                 type="date"
@@ -89,6 +104,11 @@
 <div class="dashboard">
 
     <div class="metric">
+        <h3>Falta</h3>
+        <p id="falta">R$ 30000</p>
+    </div>
+
+    <div class="metric">
 
         <h3>Valor Guardado</h3>
 
@@ -107,10 +127,6 @@
         </p>
 
     </div>
-    <div class="metric">
-        <h3>Total Gasto</h3>
-        <p id="totalGasto">R$ 0</p>
-    </div>
 
     <div class="metric">
         <h3>Meta Casamento</h3>
@@ -118,9 +134,13 @@
     </div>
 
     <div class="metric">
-        <h3>Falta</h3>
-        <p id="falta">R$ 30000</p>
+        <h3>Total Gasto</h3>
+        <p id="totalGasto">R$ 0</p>
     </div>
+
+
+
+
 
 
 
@@ -132,22 +152,31 @@
         <span>Progresso do orçamento</span>
         <span id="percentual">0%</span>
     </div>
-
     <div class="progress-bar">
         <div id="progressFill" class="progress-fill"></div>
     </div>
 
 </div>
 
-<div class="chart-container">
+<button id="toggleChart">
+    Ver Gráfico
+</button>
 
-    <h2> Gastos por Categoria</h2>
+<div class="chart-container" id="chartContainer">
+
+    <h2>Gastos por Categoria</h2>
 
     <canvas id="categoryChart"></canvas>
 
 </div>
 
-<h2> Orçamento por Categoria</h2>
+<button id="toggleBudgets">
+    Ver Orçamento por Categoria
+</button>
+
+<div id="categoryBudgets"></div>
+
+<div class="chart-container">
 
 <h2 id="total">
     Total: R$ 0

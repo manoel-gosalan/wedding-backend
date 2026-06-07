@@ -92,10 +92,8 @@ button:hover{
 }
 
 .dashboard{
-    display:flex;
-    gap:20px;
-    flex-wrap:wrap;
-    margin:20px 0;
+    display:grid;
+    gap:15px;
 }
 
 .metric{
@@ -116,17 +114,16 @@ button:hover{
 }
 
 .metric h3{
-    margin-bottom:10px;
+    margin-bottom:18px;
 }
 
 .metric p{
+    font-size:1.4rem;
+    font-weight:700;
+}
 
-    font-size:30px;
-
-    font-weight:bold;
-
-    color:#27ae60;
-
+.metric small{
+    font-size:.85rem;
 }
 
 .progress-container{
@@ -193,15 +190,7 @@ button:hover{
 
     gap:20px;
 }
-.metric p{
 
-    font-size:30px;
-
-    font-weight:bold;
-
-    color:#27ae60;
-
-}
 
 .category-budget{
 
@@ -301,4 +290,46 @@ button:hover{
     margin-top:8px;
     color:#64748b;
     font-size:14px;
+}
+#exchangeRate{
+
+    text-align:center;
+
+    margin-bottom:20px;
+
+    padding:10px;
+
+    border-radius:8px;
+
+    background:#1f2937;
+
+    color:white;
+
+    font-size:14px;
+}
+
+@media(max-width:768px){
+
+    .dashboard{
+        grid-template-columns:1fr;
+    }
+
+}
+
+@media(min-width:769px){
+
+    .dashboard{
+        grid-template-columns:
+            repeat(2,1fr);
+    }
+
+}
+
+@media(min-width:1200px){
+
+    .dashboard{
+        grid-template-columns:
+            repeat(3,1fr);
+    }
+
 }

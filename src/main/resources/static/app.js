@@ -1,4 +1,8 @@
 const API_URL = "http://localhost:8080/api/expenses";
+const PLAN_API = "http://localhost:8080/api/plan";
+
+// ✅ #3 — Constante única para conversão EUR → BRL
+const EUR_TO_BRL = 6.4;
 
 const expensesDiv = document.getElementById("expenses");
 const form = document.getElementById("expenseForm");
@@ -6,650 +10,501 @@ const form = document.getElementById("expenseForm");
 let categoryChart = null;
 let allExpenses = [];
 let currentPlan = null;
-const CATEGORY_BUDGETS = {
-  comida: 10000,
 
-  fotografia: 3000,
+// ✅ #4 — Normalização de categorias (remove acentos, lowercase)
+function normalizeCategory(category) {
 
-  foto: 3000,
+    if(!category){
+        return "";
+    }
 
-  musica: 2000,
-
-  música: 2000,
-
-  decoracao: 5000,
-
-  decoração: 5000,
-
-  vestido: 2500,
-
-  aliancas: 1500,
-};
-
-function formatCurrency(value) {
-  return Number(value).toLocaleString("pt-BR", {
-    style: "currency",
-    currency: "BRL",
-  });
+    return category
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .toLowerCase();
 }
-/*
-========================================================
-ANÁLISE FINANCEIRA DO CASAMENTO
-========================================================
 
-Objetivo:
+// ✅ #6 — Função central de conversão (um único lugar para mudar depois)
+function convertToBRL(value, currency) {
+    return currency === "EUR"
+        ? value * EUR_TO_BRL
+        : value;
+}
 
-Verificar se o casal consegue atingir
-a meta financeira até a data do casamento.
+// ✅ #4 — CATEGORY_BUDGETS usando chaves normalizadas (sem duplicatas)
+const CATEGORY_BUDGETS = {
+    comida:     10000,
+    fotografia:  3000,
+    musica:      2000,
+    decoracao:   5000,
+    vestido:     2500,
+    aliancas:    1500,
+};
+window.addEventListener(
+    "DOMContentLoaded",
+    () => {
 
-Exemplo:
+        const budgets =
+            document.getElementById(
+                "categoryBudgets"
+            );
 
-Meta:
-R$ 30.000
+        budgets.style.display =
+            "none";
 
-Falta:
-R$ 20.000
+        document
+            .getElementById(
+                "toggleBudgets"
+            )
+            .addEventListener(
+                "click",
+                () => {
 
-Meses restantes:
-10
+                    budgets.style.display =
+                        budgets.style.display === "none"
+                            ? "grid"
+                            : "none";
+                }
+            );
+        const chartContainer =
+            document.getElementById(
+                "chartContainer"
+            );
 
-Necessário:
-R$ 2.000/mês
+        chartContainer.style.display =
+            "none";
 
-Se conseguem guardar:
+        document
+            .getElementById(
+                "toggleChart"
+            )
+            .addEventListener(
+                "click",
+                () => {
 
-R$ 2.500
-
-→ Meta alcançável
-
-Se conseguem guardar:
-
-R$ 1.500
-
-→ Faltam R$ 500/mês
-
-========================================================
-*/
-
-function updateGoalAnalysis(total){
-    console.log("FUNÇÃO CHAMADA");
-    console.log(currentPlan);
-    if(!currentPlan){
-        return;
+                    chartContainer.style.display =
+                        chartContainer.style.display === "none"
+                            ? "block"
+                            : "none";
+                }
+            );
     }
 
-    const monthlySaving =
-        Number(
-            currentPlan.monthlySaving
-        ) || 0;
+);
+function formatCurrency(value) {
+    return Number(value).toLocaleString("pt-BR", {
+        style: "currency",
+        currency: "BRL",
+    });
+}
 
-    const weddingDateValue =
-        currentPlan.weddingDate;
+function formatEuro(value) {
+    return Number(value).toLocaleString("pt-PT", {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+    });
+}
 
-    if(!weddingDateValue){
+function getCategoryIcon(category) {
+    // ✅ #4 — Ícones também normalizados, sem duplicatas
+    const icons = {
+        comida:     "🍽️",
+        fotografia: "📸",
+        musica:     "🎵",
+        decoracao:  "🌸",
+        vestido:    "👗",
+        aliancas:   "💍",
+    };
+    return icons[normalizeCategory(category)] || "📌";
+}
 
-        document.getElementById(
-            "goalStatus"
-        ).textContent =
+
+function updateGoalAnalysis(total) {
+    if (!currentPlan) return;
+
+    const monthlySaving = Number(currentPlan.monthlySaving) || 0;
+
+    // ✅ #6 — usa convertToBRL
+    const monthlySavingBRL = convertToBRL(monthlySaving, currentPlan.currency);
+
+    const weddingDateValue = currentPlan.weddingDate;
+
+    if (!weddingDateValue) {
+        document.getElementById("goalStatus").textContent =
             "Informe a data do casamento";
-
         return;
     }
 
-    const weddingDate =
-        new Date(
-            weddingDateValue
-        );
-
-    const today =
-        new Date();
+    const weddingDate = new Date(weddingDateValue);
+    const today = new Date();
 
     const monthsRemaining =
-        (
-            (weddingDate.getFullYear()
-                - today.getFullYear()) * 12
-        )
-        +
-        (
-            weddingDate.getMonth()
-            - today.getMonth()
-        );
+        (weddingDate.getFullYear() - today.getFullYear()) * 12
+        + (weddingDate.getMonth() - today.getMonth());
 
-    if(monthsRemaining <= 0){
-
-        document.getElementById(
-            "goalStatus"
-        ).textContent =
-            "Data inválida";
-
+    if (monthsRemaining <= 0) {
+        document.getElementById("goalStatus").textContent = "Data inválida";
         return;
     }
+
+    // ✅ #1 — savings convertido antes de calcular falta
+    const savingsBRL = convertToBRL(
+        currentPlan.currentSavings,
+        currentPlan.currency
+    );
 
     const falta =
         currentPlan.targetBudget
-        -
-        currentPlan.currentSavings
-        -
-        total;
+        - savingsBRL
+        - total;
 
-    const requiredPerMonth =
-        falta / monthsRemaining;
+    const requiredPerMonth = falta / monthsRemaining;
+    const difference = monthlySavingBRL - requiredPerMonth;
 
-    const difference =
-        monthlySaving
-        - requiredPerMonth;
+    const goalStatus = document.getElementById("goalStatus");
 
-    const goalStatus =
-        document.getElementById(
-            "goalStatus"
-        );
+    function convertToEUR(value) {
+        return value / EUR_TO_BRL;
+    }
+    const differenceEUR =
+        convertToEUR(difference)
 
-    if(difference > 0){
+    if (difference > 0) {
 
         goalStatus.innerHTML = `
         <span style="color:#22c55e">
-            +${formatCurrency(difference)}/mês
+            € ${formatEuro(differenceEUR)}
         </span>
+
         <br>
+
+        <span style="color:#22c55e">
+            ${formatCurrency(difference)}/mês
+        </span>
+
+        <br>
+
         <small>
             Acima do necessário
         </small>
     `;
 
-    }else{
-
+    } else {
+        // language=HTML
         goalStatus.innerHTML = `
-        <span style="color:#ef4444">
-            ${formatCurrency(
-            Math.abs(difference)
-        )}/mês
-        </span>
-        <br>
-        <small>
-            Precisam guardar mais
-        </small>
-    `;
+            <span style="color:#ef4444">
+        € ${formatEuro(Math.abs(differenceEUR))}
+    </span>
+
+            <br>
+
+            <span style="color:#ef4444">
+        ${formatCurrency(Math.abs(difference))}/mês
+    </span>
+
+            <br>
+
+            <small>
+                Precisam guardar mais
+            </small>
+        `;
     }
-}
-
-function getCategoryIcon(category) {
-  const icons = {
-    comida: "🍽️",
-    fotografia: "📸",
-    foto: "📸",
-    musica: "🎵",
-    música: "🎵",
-    decoração: "🌸",
-    decoracao: "🌸",
-    vestido: "👗",
-    alianças: "💍",
-    aliancas: "💍",
-  };
-
-  return icons[category.toLowerCase()] || "📌";
 }
 
 function renderChart(expenses) {
-  const categories = {};
+    const categories = {};
 
-  expenses.forEach((expense) => {
-    const category = expense.category;
+    expenses.forEach((expense) => {
+        // ✅ #4 — normaliza antes de agrupar no gráfico
+        const category = normalizeCategory(expense.category);
+        const value = Number(expense.value);
 
-    const value = Number(expense.value);
+        categories[category] = (categories[category] || 0) + value;
+    });
 
-    if (categories[category]) {
-      categories[category] += value;
-    } else {
-      categories[category] = value;
-    }
-  });
+    const labels = Object.keys(categories);
+    const values = Object.values(categories);
 
-  const labels = Object.keys(categories);
+    if (categoryChart) categoryChart.destroy();
 
-  const values = Object.values(categories);
+    const ctx = document.getElementById("categoryChart").getContext("2d");
 
-  if (categoryChart) {
-    categoryChart.destroy();
-  }
-
-  const ctx = document.getElementById("categoryChart").getContext("2d");
-
-  categoryChart = new Chart(ctx, {
-    type: "pie",
-
-    data: {
-      labels,
-
-      datasets: [
-        {
-          data: values,
+    categoryChart = new Chart(ctx, {
+        type: "pie",
+        data: {
+            labels,
+            datasets: [{ data: values }],
         },
-      ],
-    },
-  });
+    });
 }
 
 function renderCategoryBudgets(expenses) {
-  const container = document.getElementById("categoryBudgets");
+    const container = document.getElementById("categoryBudgets");
+    container.innerHTML = "";
 
-  container.innerHTML = "";
+    const spentByCategory = {};
 
-  const spentByCategory = {};
+    expenses.forEach((expense) => {
+        // ✅ #4 — normaliza para evitar duplicatas nos cards
+        const category = normalizeCategory(expense.category);
+        const value = Number(expense.value);
 
-  expenses.forEach((expense) => {
-    const category = expense.category.toLowerCase();
+        spentByCategory[category] = (spentByCategory[category] || 0) + value;
+    });
 
-    const value = Number(expense.value);
+    Object.entries(CATEGORY_BUDGETS).forEach(([category, budget]) => {
+        const spent = spentByCategory[category] || 0;
+        const remaining = budget - spent;
 
-    if (spentByCategory[category]) {
-      spentByCategory[category] += value;
-    } else {
-      spentByCategory[category] = value;
-    }
-  });
+        let status = "🟢 Dentro do orçamento";
+        if (remaining <= budget * 0.3) status = "🟡 Atenção";
+        if (remaining < 0) status = "🔴 Estourado";
 
-  Object.entries(CATEGORY_BUDGETS).forEach(([category, budget]) => {
-    const spent = spentByCategory[category] || 0;
-
-    const remaining = budget - spent;
-
-    let status = "🟢 Dentro do orçamento";
-
-    if (remaining <= budget * 0.3) {
-      status = "🟡 Atenção";
-    }
-
-    if (remaining < 0) {
-      status = "🔴 Estourado";
-    }
-
-    container.innerHTML += `
+        container.innerHTML += `
             <div class="category-budget">
-
-                <h3>
-                    ${getCategoryIcon(category)}
-                    ${category}
-                </h3>
-
-                <p>
-                    Previsto:
-                    ${formatCurrency(budget)}
-                </p>
-
-                <p>
-                    Gasto:
-                    ${formatCurrency(spent)}
-                </p>
-
-                <p>
-                    Restante:
-                    ${formatCurrency(remaining)}
-                </p>
-
-                <p>
-                    Status:
-                    ${status}
-                </p>
+                <h3>${getCategoryIcon(category)} ${category}</h3>
+                <p>Previsto: ${formatCurrency(budget)}</p>
+                <p>Gasto: ${formatCurrency(spent)}</p>
+                <p>Restante: ${formatCurrency(remaining)}</p>
+                <p>Status: ${status}</p>
             </div>
         `;
-  });
+    });
 }
 
 async function loadExpenses() {
-  const response = await fetch(API_URL);
-    console.log(currentPlan);
+    const response = await fetch(API_URL);
+    const expenses = await response.json();
+    allExpenses = expenses;
 
-  const expenses = await response.json();
-  allExpenses = expenses;
+    expensesDiv.innerHTML = "";
 
-  expensesDiv.innerHTML = "";
+    let total = 0;
 
-  let total = 0;
+    expenses.forEach((expense) => {
+        total += Number(expense.value);
 
-  expenses.forEach((expense) => {
-    total += Number(expense.value);
+        expensesDiv.innerHTML += `
+            <div class="card">
+                <h3>${expense.description}</h3>
+                <p>
+                    ${getCategoryIcon(expense.category)}
+                    ${expense.category}
+                </p>
+                <strong>${formatCurrency(expense.value)}</strong>
+                <p>📅 ${expense.expenseDate || "Sem data"}</p>
+                <br>
+                <button onclick="editExpense(${expense.id})">Editar</button>
+                <button onclick="deleteExpense(${expense.id})">Excluir</button>
+            </div>
+        `;
+    });
 
-    expensesDiv.innerHTML += `
-      <div class="card">
+    const targetBudget = currentPlan
+        ? currentPlan.targetBudget
+        : 30000;
 
-        <h3>${expense.description}</h3>
+    // ✅ #1 — falta usa savingsBRL convertido corretamente
+    const savingsBRL = currentPlan
+        ? convertToBRL(currentPlan.currentSavings, currentPlan.currency)
+        : 0;
 
-        <p>
-          ${getCategoryIcon(expense.category)}
-          ${expense.category}
-        </p>
+    const falta = targetBudget - savingsBRL - total;
 
-        <strong>
-          ${formatCurrency(expense.value)}
-        </strong>
+    updateGoalAnalysis(total);
 
-        <p>
-          📅 ${expense.expenseDate || "Sem data"}
-        </p>
+    const percentual = (total / targetBudget) * 100;
 
-      <br>
+    document.getElementById("percentual").textContent =
+        `${percentual.toFixed(1)}%`;
 
-        <button onclick="editExpense(${expense.id})">
-          Editar
-        </button>
+    document.getElementById("progressFill").style.width =
+        `${Math.min(percentual, 100)}%`;
 
-        <button onclick="deleteExpense(${expense.id})">
-          Excluir
-        </button>
+    document.getElementById("totalGasto").textContent =
+        formatCurrency(total);
 
-      </div>
+    // ✅ #2 — Meta Casamento exibe EUR + BRL (igual ao card Guardado)
+    const targetBudgetEUR = targetBudget / EUR_TO_BRL;
+
+    document.getElementById("metaCasamento").innerHTML = `
+        € ${formatEuro(targetBudgetEUR)}
+        <br>
+        <small>${formatCurrency(targetBudget)}</small>
     `;
-  });
 
-    const targetBudget =
-        currentPlan
-            ? currentPlan.targetBudget
-            : 30000;
+    // Card Falta — EUR + BRL
+    const faltaEUR = falta / EUR_TO_BRL;
 
-    const currentSavings =
-        currentPlan
-            ? currentPlan.currentSavings
-            : 0;
+    document.getElementById("falta").innerHTML = `
+        <span style="color:#ef4444">
+        € ${formatEuro(faltaEUR)}
+        </span>
+        <br>
+        <small>
+        <span style="color:#ef4444">
+        ${formatCurrency(falta)}
+        </span>
+        </small>
+    `;
 
-    const falta =
-        targetBudget
-        -
-        currentSavings
-        -
-        total;
-  updateGoalAnalysis(total);
+    document.getElementById("total").textContent =
+        `Total: ${formatCurrency(total)}`;
 
-  const percentual = (total / targetBudget) * 100;
-
-
-  document.getElementById("percentual").textContent =
-    `${percentual.toFixed(1)}%`;
-
-  document.getElementById("progressFill").style.width =
-    `${Math.min(percentual, 100)}%`;
-
-  document.getElementById("totalGasto").textContent = formatCurrency(total);
-
-  document.getElementById("metaCasamento").textContent =
-    formatCurrency(targetBudget);
-
-  document.getElementById("falta").textContent = formatCurrency(falta);
-
-  document.getElementById("total").textContent =
-    `Total: ${formatCurrency(total)}`;
-
-  renderChart(expenses);
-
-  renderCategoryBudgets(expenses);
+    renderChart(expenses);
+    renderCategoryBudgets(expenses);
 }
+
 async function editExpense(id) {
-  const description = prompt("Nova descrição:");
+    const description = prompt("Nova descrição:");
+    if (!description) return;
 
-  if (!description) return;
+    const category = prompt("Nova categoria:");
+    const value = prompt("Novo valor:");
+    const expenseDate = prompt("Nova data (AAAA-MM-DD):");
 
-  const category = prompt("Nova categoria:");
+    await fetch(`${API_URL}/${id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ description, category, value, expenseDate }),
+    });
 
-  const value = prompt("Novo valor:");
+    const categoryFilter = document.getElementById("categoryFilter");
 
-  const expenseDate = prompt("Nova data (AAAA-MM-DD):");
+    // ✅ #4 — categorias no filtro também normalizadas (sem duplicatas visuais)
+    const categories = [
+        ...new Set(allExpenses.map((e) => normalizeCategory(e.category)))
+    ];
 
-  await fetch(`${API_URL}/${id}`, {
-    method: "PUT",
+    categoryFilter.innerHTML =
+        '<option value="">Todas categorias</option>';
 
-    headers: {
-      "Content-Type": "application/json",
-    },
+    categories.forEach((cat) => {
+        categoryFilter.innerHTML +=
+            `<option value="${cat}">${cat}</option>`;
+    });
 
-    body: JSON.stringify({
-      description,
-      category,
-      value,
-      expenseDate,
-    }),
-  });
-  const categoryFilter = document.getElementById("categoryFilter");
-
-    const categories =
-        [...new Set(
-            allExpenses.map(
-                e => e.category
-            )
-        )];
-
-  categoryFilter.innerHTML = '<option value="">Todas categorias</option>';
-
-  categories.forEach((category) => {
-    categoryFilter.innerHTML += `
-        <option value="${category}">
-            ${category}
-        </option>
-    `;
-  });
-
-  loadExpenses();
+    loadExpenses();
 }
 
 async function deleteExpense(id) {
-  await fetch(`${API_URL}/${id}`, {
-    method: "DELETE",
-  });
-
-  loadExpenses();
+    await fetch(`${API_URL}/${id}`, { method: "DELETE" });
+    loadExpenses();
 }
 
 form.addEventListener("submit", async (event) => {
-  event.preventDefault();
+    event.preventDefault();
 
-  const description = document.getElementById("description").value;
+    const description = document.getElementById("description").value;
+    const category    = document.getElementById("category").value;
+    const value       = document.getElementById("value").value;
+    const expenseDate = document.getElementById("expenseDate").value;
 
-  const category = document.getElementById("category").value;
-  const value = document.getElementById("value").value;
+    await fetch(API_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ description, category, value, expenseDate }),
+    });
 
-  const expenseDate = document.getElementById("expenseDate").value;
-
-  await fetch(API_URL, {
-    method: "POST",
-
-    headers: {
-      "Content-Type": "application/json",
-    },
-
-    body: JSON.stringify({
-      description,
-      category,
-      value,
-      expenseDate,
-    }),
-  });
-
-  form.reset();
-
-  loadExpenses();
+    form.reset();
+    loadExpenses();
 });
 
-
 function renderExpenses(expenses) {
-  expensesDiv.innerHTML = "";
+    expensesDiv.innerHTML = "";
 
-  expenses.forEach((expense) => {
-    expensesDiv.innerHTML += `
+    expenses.forEach((expense) => {
+        expensesDiv.innerHTML += `
             <div class="card">
-
-                <h3>
-                    ${expense.description}
-                </h3>
-
+                <h3>${expense.description}</h3>
                 <p>
                     ${getCategoryIcon(expense.category)}
-
                     ${expense.category}
                 </p>
-
-                <strong>
-                    ${formatCurrency(expense.value)}
-                </strong>
-
-                <p>
-                    📅 ${expense.expenseDate}
-                </p>
-
-                <button
-                    onclick="editExpense(${expense.id})"
-                >
-                    Editar
-                </button>
-
-                <button
-                    onclick="deleteExpense(${expense.id})"
-                >
-                    Excluir
-                </button>
-
+                <strong>${formatCurrency(expense.value)}</strong>
+                <p>📅 ${expense.expenseDate}</p>
+                <button onclick="editExpense(${expense.id})">Editar</button>
+                <button onclick="deleteExpense(${expense.id})">Excluir</button>
             </div>
         `;
-  });
+    });
 }
 
 document.getElementById("exportPdf").addEventListener("click", async () => {
-  const response = await fetch(`${API_URL}/pdf`);
-  console.log(response.status);
-  console.log(response.headers.get("content-type"));
+    const response = await fetch(`${API_URL}/pdf`);
+    const blob = await response.blob();
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement("a");
 
-  const blob = await response.blob();
+    a.href = url;
+    a.download = "Resumo_Casamento.pdf";
+    a.click();
 
-  const url = window.URL.createObjectURL(blob);
-
-  const a = document.createElement("a");
-
-  a.href = url;
-
-  a.download = "Resumo_Casamento.pdf";
-
-  a.click();
-
-  window.URL.revokeObjectURL(url);
+    window.URL.revokeObjectURL(url);
 });
 
 document
-.getElementById("searchInput")
-.addEventListener(
-"input",
-applyFilters
-);
+    .getElementById("searchInput")
+    .addEventListener("input", applyFilters);
 
 document
-.getElementById("categoryFilter")
-.addEventListener(
-"change",
-applyFilters
-);
-function applyFilters(){
+    .getElementById("categoryFilter")
+    .addEventListener("change", applyFilters);
 
-    const search =
-    document
-    .getElementById(
-        "searchInput"
-    )
-    .value
-    .toLowerCase();
+function applyFilters() {
+    const search = document
+        .getElementById("searchInput")
+        .value
+        .toLowerCase();
 
-    const category =
-    document
-    .getElementById(
-        "categoryFilter"
-    )
-    .value;
+    const category = document
+        .getElementById("categoryFilter")
+        .value;
 
-    const filtered =
-    allExpenses.filter(expense => {
+    const filtered = allExpenses.filter((expense) => {
+        const matchesSearch = expense.description
+            .toLowerCase()
+            .includes(search);
 
-        const matchesSearch =
-
-        expense.description
-        .toLowerCase()
-        .includes(search);
-
+        // ✅ #4 — compara categorias normalizadas no filtro
         const matchesCategory =
+            !category ||
+            normalizeCategory(expense.category) === normalizeCategory(category);
 
-        !category ||
-
-        expense.category === category;
-
-        return matchesSearch
-            &&
-            matchesCategory;
+        return matchesSearch && matchesCategory;
     });
 
     renderExpenses(filtered);
 }
 
-
-
-const PLAN_API =
-    "http://localhost:8080/api/plan";
-
 document
     .getElementById("savePlan")
-    .addEventListener(
-        "click",
-        savePlan
+    .addEventListener("click", savePlan);
+
+async function savePlan() {
+    const targetBudget = Number(
+        document.getElementById("targetBudget").value
     );
+    const currentSavings = Number(
+        document.getElementById("currentSavings").value
+    );
+    const monthlySaving = Number(
+        document.getElementById("monthlySaving").value
+    );
+    const weddingDate = document.getElementById("weddingDate").value;
+    const currency    = document.getElementById("currency").value;
 
-async function savePlan(){
-
-    console.log("SAVE PLAN CHAMADO");
-
-    const targetBudget =
-        Number(
-            document.getElementById(
-                "targetBudget"
-            ).value
-        );
-
-    const currentSavings =
-        Number(
-            document.getElementById(
-                "currentSavings"
-            ).value
-        );
-
-    const monthlySaving =
-        Number(
-            document.getElementById(
-                "monthlySaving"
-            ).value
-        );
-
-    const weddingDate =
-        document.getElementById(
-            "weddingDate"
-        ).value;
-
-    console.log({
-        targetBudget,
-        currentSavings,
-        monthlySaving,
-        weddingDate
+    await fetch(PLAN_API, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+            targetBudget,
+            currentSavings,
+            monthlySaving,
+            currency,
+            weddingDate,
+        }),
     });
-
-    await fetch(
-        PLAN_API,
-        {
-            method: "POST",
-
-            headers: {
-                "Content-Type":
-                    "application/json"
-            },
-
-            body: JSON.stringify({
-                targetBudget,
-                currentSavings,
-                monthlySaving,
-                weddingDate
-            })
-        }
-    );
 
     await loadPlan();
     await loadExpenses();
@@ -657,75 +512,56 @@ async function savePlan(){
     alert("Planejamento salvo!");
 }
 
-async function loadPlan(){
-    console.log("LOAD PLAN CHAMADO");
-    const response =
-        await fetch(
-            PLAN_API
-        );
+async function loadPlan() {
+    const response = await fetch(PLAN_API);
+    const plans = await response.json();
 
-    const plans =
-        await response.json();
+    if (plans.length === 0) return;
 
-    if(plans.length === 0){
-        return;
-    }
+    currentPlan = plans[plans.length - 1];
 
-    currentPlan =
-        plans[plans.length - 1];
-
-    document.getElementById(
-        "targetBudget"
-    ).value =
+    document.getElementById("targetBudget").value =
         currentPlan.targetBudget;
 
-    document.getElementById(
-        "currentSavings"
-    ).value =
+    document.getElementById("currentSavings").value =
         currentPlan.currentSavings;
 
-    const savingsElement =
-        document.getElementById(
-            "currentSavingsValue"
-        );
+    document.getElementById("currency").value =
+        currentPlan.currency;
 
-    if(savingsElement){
-
-        savingsElement.textContent =
-            formatCurrency(
-                currentPlan.currentSavings
-            );
-    }
-
-    document.getElementById(
-        "monthlySaving"
-    ).value =
+    document.getElementById("monthlySaving").value =
         currentPlan.monthlySaving;
 
-    document.getElementById(
-        "weddingDate"
-    ).value =
+    document.getElementById("weddingDate").value =
         currentPlan.weddingDate;
 
-    document.getElementById(
-        "metaCasamento"
-    ).textContent =
-        formatCurrency(
-            currentPlan.targetBudget
-        );
+    // ✅ #2 — Meta Casamento em EUR + BRL
+    const targetBudgetEUR = currentPlan.targetBudget / EUR_TO_BRL;
 
-    document.getElementById(
-        "currentSavingsValue"
-    ).textContent =
-        formatCurrency(
-            currentPlan.currentSavings
-        );
+    document.getElementById("metaCasamento").innerHTML = `
+        € ${formatEuro(targetBudgetEUR)}
+        <br>
+        <small>${formatCurrency(currentPlan.targetBudget)}</small>
+    `;
 
+    // ✅ #6 — usa convertToBRL
+    const savingsBRL = convertToBRL(
+        currentPlan.currentSavings,
+        currentPlan.currency
+    );
+
+    const savingsElement = document.getElementById("currentSavingsValue");
+
+    if (savingsElement) {
+        savingsElement.innerHTML = `
+            ${currentPlan.currency} ${currentPlan.currentSavings}
+            <br>
+            <small>${formatCurrency(savingsBRL)}</small>
+        `;
+    }
 }
+
 (async () => {
-
     await loadPlan();
-
     await loadExpenses();
-
 })();
