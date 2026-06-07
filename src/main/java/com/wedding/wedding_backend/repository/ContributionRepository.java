@@ -1,4 +1,10 @@
 package com.wedding.wedding_backend.repository;
 
-public interface ContributionRepository {
+import com.wedding.wedding_backend.entity.Contribution;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+
+@Repository
+public interface ContributionRepository
+        extends JpaRepository<Contribution, Long> {
 }
