@@ -1,5 +1,5 @@
-const API_URL = "http://localhost:8080/api/expenses";
-const PLAN_API = "http://localhost:8080/api/plan";
+const API_URL = "/api/expenses";
+const PLAN_API = "/api/plan";
 
 // ✅ #3 — Constante única para conversão EUR → BRL
 const EUR_TO_BRL = 6.4;
