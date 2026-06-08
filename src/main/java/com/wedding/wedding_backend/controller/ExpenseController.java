@@ -4,6 +4,7 @@ import com.wedding.wedding_backend.dto.ExpenseDTO;
 import com.wedding.wedding_backend.entity.Expense;
 import com.wedding.wedding_backend.mapper.ExpenseMapper;
 import com.wedding.wedding_backend.pdf.PdfService;
+import com.wedding.wedding_backend.service.DashboardService;
 import com.wedding.wedding_backend.service.ExpenseService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpHeaders;
@@ -11,6 +12,7 @@ import org.springframework.http.MediaType;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import com.wedding.wedding_backend.dto.DashboardDTO;
 
 import java.util.List;
 
@@ -21,8 +23,8 @@ public class ExpenseController {
     
     private final PdfService pdfService;
     private final ExpenseService service;
+    private final DashboardService dashboardService;
 
-    
 
     @GetMapping
     public List<Expense> getAll() {
@@ -35,11 +37,15 @@ public class ExpenseController {
                 ExpenseMapper.toEntity(dto));
     }
 
+
     public ExpenseController(
             ExpenseService service,
-            PdfService pdfService) {
+            PdfService pdfService,
+            DashboardService dashboardService
+    ) {
         this.service = service;
         this.pdfService = pdfService;
+        this.dashboardService = dashboardService;
     }
 
     @PutMapping("/{id}")
@@ -56,25 +62,30 @@ public class ExpenseController {
         service.delete(id);
     }
 
+
+
     @GetMapping("/pdf")
     public ResponseEntity<byte[]> exportPdf()
             throws Exception {
+
         System.out.println("PDF CHAMADO");
-        byte[] pdf = pdfService.generatePdf(
-                service.findAll());
 
-        final MediaType application_PDF2 = MediaType.APPLICATION_PDF;
-            return ResponseEntity.ok()
+        DashboardDTO dashboard =
+                dashboardService.getDashboard();
 
-                    .header(
-                            HttpHeaders.CONTENT_DISPOSITION,
-                            "attachment; filename=Resumo_Casamento.pdf")
+        byte[] pdf =
+                pdfService.generatePdf(
+                        dashboard,
+                        service.findAll()
+                );
 
-                    .contentType(
-                            application_PDF2)
-
-                    .body(pdf);
-        
+        return ResponseEntity.ok()
+                .header(
+                        HttpHeaders.CONTENT_DISPOSITION,
+                        "attachment; filename=Resumo_Casamento.pdf")
+                .contentType(
+                        MediaType.APPLICATION_PDF)
+                .body(pdf);
     }
 
 }

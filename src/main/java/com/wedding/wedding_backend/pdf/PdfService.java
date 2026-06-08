@@ -3,6 +3,7 @@ package com.wedding.wedding_backend.pdf;
 import com.itextpdf.text.*;
 import com.itextpdf.text.pdf.PdfWriter;
 
+import com.wedding.wedding_backend.dto.DashboardDTO;
 import com.wedding.wedding_backend.entity.Expense;
 import org.springframework.stereotype.Service;
 import com.itextpdf.text.pdf.PdfPTable;
@@ -14,8 +15,12 @@ import java.util.List;
 @Service
 public class PdfService {
 
+
+
         public byte[] generatePdf(
-                        List<Expense> expenses) throws Exception {
+                DashboardDTO dashboard,
+                List<Expense> expenses
+        ) throws Exception {
 
                 ByteArrayOutputStream out = new ByteArrayOutputStream();
 
@@ -60,24 +65,28 @@ public class PdfService {
                                         .doubleValue();
                 }
 
-                double meta = 30000;
-
-                double restante = meta - total;
+                document.add(
+                        new Paragraph(
+                                "Meta do Casamento: R$ "
+                                        + dashboard.getTargetBudget()));
 
                 document.add(
-                                new Paragraph(
-                                                "Meta do Casamento: R$ "
-                                                                + meta));
+                        new Paragraph(
+                                "Total Gasto: R$ "
+                                        + dashboard.getTotalExpenses()));
 
                 document.add(
-                                new Paragraph(
-                                                "Total Gasto: R$ "
-                                                                + total));
+                        new Paragraph(
+                                "Valor Restante: R$ "
+                                        + dashboard.getRemainingAmount()));
 
                 document.add(
-                                new Paragraph(
-                                                "Valor Restante: R$ "
-                                                                + restante));
+                        new Paragraph(
+                                "Valor Guardado: R$ "
+                                        + dashboard.getCurrentSavings()));
+
+                
+
 
                 document.add(
                                 new Paragraph(" "));

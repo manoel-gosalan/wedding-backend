@@ -1,5 +1,6 @@
 const API_URL = "/api/expenses";
 const PLAN_API = "/api/plan";
+const CONTRIBUTIONS_TOTAL_API = "/api/contributions/total";
 
 // ✅ #3 — Constante única para conversão EUR → BRL
 const EUR_TO_BRL = 6.4;
@@ -10,6 +11,17 @@ const form = document.getElementById("expenseForm");
 let categoryChart = null;
 let allExpenses = [];
 let currentPlan = null;
+let totalContributions = 0;
+
+function getTotalSaved() {
+
+    if (!currentPlan) {
+        return 0;
+    }
+
+    return currentPlan.currentSavings +
+        totalContributions;
+}
 
 // ✅ #4 — Normalização de categorias (remove acentos, lowercase)
 function normalizeCategory(category) {
@@ -148,15 +160,18 @@ function updateGoalAnalysis(total) {
     }
 
     // ✅ #1 — savings convertido antes de calcular falta
+    const totalSaved =
+        getTotalSaved();
+
     const savingsBRL = convertToBRL(
-        currentPlan.currentSavings,
+        totalSaved,
         currentPlan.currency
     );
 
-    const falta =
-        currentPlan.targetBudget
-        - savingsBRL
-        - total;
+    const falta = Math.max(
+        0,
+        currentPlan.targetBudget - savingsBRL - total
+    );
 
     const requiredPerMonth = falta / monthsRemaining;
     const difference = monthlySavingBRL - requiredPerMonth;
@@ -305,11 +320,18 @@ async function loadExpenses() {
         : 30000;
 
     // ✅ #1 — falta usa savingsBRL convertido corretamente
-    const savingsBRL = currentPlan
-        ? convertToBRL(currentPlan.currentSavings, currentPlan.currency)
-        : 0;
+    const totalSaved = getTotalSaved();
 
-    const falta = targetBudget - savingsBRL - total;
+    const savingsBRL =
+        convertToBRL(
+            totalSaved,
+            currentPlan.currency
+        );
+
+    const falta = Math.max(
+        0,
+        targetBudget - savingsBRL - total
+    );
 
     updateGoalAnalysis(total);
 
@@ -333,23 +355,51 @@ async function loadExpenses() {
         <small>${formatCurrency(targetBudget)}</small>
     `;
 
-    // Card Falta — EUR + BRL
-    const faltaEUR = falta / EUR_TO_BRL;
+    // Card Falta / Sobra — EUR + BRL
+    const sobra =
+        savingsBRL + total - targetBudget;
 
-    document.getElementById("falta").innerHTML = `
-        <span style="color:#ef4444">
-        € ${formatEuro(faltaEUR)}
+    const faltaEUR =
+        falta / EUR_TO_BRL;
+
+    const faltaElement =
+        document.getElementById("falta");
+
+    if (sobra > 0) {
+
+        const sobraEUR =
+            sobra / EUR_TO_BRL;
+
+        faltaElement.innerHTML = `
+        <span style="color:#22c55e">
+            + € ${formatEuro(sobraEUR)}
         </span>
         <br>
+        <small style="color:#22c55e">
+            + ${formatCurrency(sobra)}
+        </small>
+        <br>
         <small>
-        <span style="color:#ef4444">
-        ${formatCurrency(falta)}
-        </span>
+            Acima da meta
         </small>
     `;
 
-    document.getElementById("total").textContent =
-        `Total: ${formatCurrency(total)}`;
+    } else {
+
+        faltaElement.innerHTML = `
+        <span style="color:#ef4444">
+            € ${formatEuro(faltaEUR)}
+        </span>
+        <br>
+        <small style="color:#ef4444">
+            ${formatCurrency(falta)}
+        </small>
+        <br>
+        <small>
+            Ainda falta guardar
+        </small>
+    `;
+    }
 
     renderChart(expenses);
     renderCategoryBudgets(expenses);
@@ -520,6 +570,12 @@ async function loadPlan() {
 
     currentPlan = plans[plans.length - 1];
 
+    const contributionsResponse =
+        await fetch(CONTRIBUTIONS_TOTAL_API);
+
+    totalContributions =
+        await contributionsResponse.json();
+
     document.getElementById("targetBudget").value =
         currentPlan.targetBudget;
 
@@ -545,19 +601,24 @@ async function loadPlan() {
     `;
 
     // ✅ #6 — usa convertToBRL
+    const totalSaved =
+        getTotalSaved();
+
     const savingsBRL = convertToBRL(
-        currentPlan.currentSavings,
+        totalSaved,
         currentPlan.currency
     );
 
-    const savingsElement = document.getElementById("currentSavingsValue");
+    const savingsElement =
+        document.getElementById("currentSavingsValue");
 
     if (savingsElement) {
+
         savingsElement.innerHTML = `
-            € ${formatEuro(currentPlan.currentSavings)}
-            <br>
-            <small>${formatCurrency(savingsBRL)}</small>
-        `;
+        € ${formatEuro(totalSaved)}
+        <br>
+        <small>${formatCurrency(savingsBRL)}</small>
+    `;
     }
 }
 
