@@ -17,6 +17,7 @@ public class PdfService {
 
 
 
+
         public byte[] generatePdf(
                 DashboardDTO dashboard,
                 List<Expense> expenses
@@ -31,20 +32,22 @@ public class PdfService {
                                 out);
 
                 document.open();
-
                 Font titleFont = FontFactory.getFont(
-                                FontFactory.HELVETICA_BOLD,
-                                18);
+                        FontFactory.HELVETICA_BOLD,
+                        18);
 
                 Font sectionFont = FontFactory.getFont(
-                                FontFactory.HELVETICA_BOLD,
-                                14);
+                        FontFactory.HELVETICA_BOLD,
+                        14);
 
                 document.add(
-                                new Paragraph(
-                                                "RESUMO DO CASAMENTO",
-                                                titleFont));
+                        new Paragraph(
+                                "Wedding Planner",
+                                titleFont));
 
+                document.add(
+                        new Paragraph(
+                                "Relatório Financeiro"));
                 document.add(
                                 new Paragraph(" "));
 
@@ -65,25 +68,32 @@ public class PdfService {
                                         .doubleValue();
                 }
 
-                document.add(
-                        new Paragraph(
-                                "Meta do Casamento: R$ "
-                                        + dashboard.getTargetBudget()));
+                PdfPTable summaryTable =
+                        new PdfPTable(2);
 
-                document.add(
-                        new Paragraph(
-                                "Total Gasto: R$ "
-                                        + dashboard.getTotalExpenses()));
+                summaryTable.setWidthPercentage(100);
 
-                document.add(
-                        new Paragraph(
-                                "Valor Restante: R$ "
-                                        + dashboard.getRemainingAmount()));
+                summaryTable.addCell("Meta do Casamento");
+                summaryTable.addCell(
+                        "R$ " + dashboard.getTargetBudget());
 
-                document.add(
-                        new Paragraph(
-                                "Valor Guardado: R$ "
-                                        + dashboard.getCurrentSavings()));
+                summaryTable.addCell("Valor Guardado");
+                summaryTable.addCell(
+                        "R$ " + dashboard.getCurrentSavings());
+
+                summaryTable.addCell("Total Gasto");
+                summaryTable.addCell(
+                        "R$ " + dashboard.getTotalExpenses());
+
+                summaryTable.addCell("Valor Restante");
+                summaryTable.addCell(
+                        "R$ " + dashboard.getRemainingAmount());
+
+                summaryTable.addCell("Data do Casamento");
+                summaryTable.addCell(
+                        dashboard.getWeddingDate().toString());
+
+                document.add(summaryTable);
 
                 
 
@@ -99,32 +109,32 @@ public class PdfService {
                 document.add(
                                 new Paragraph(" "));
 
+                PdfPTable expensesTable =
+                        new PdfPTable(4);
+
+                expensesTable.setWidthPercentage(100);
+
+                expensesTable.addCell("Descrição");
+                expensesTable.addCell("Categoria");
+                expensesTable.addCell("Valor");
+                expensesTable.addCell("Data");
+
                 for (Expense expense : expenses) {
 
-                        document.add(
-                                        new Paragraph(
-                                                        "Descrição: "
-                                                                        + expense.getDescription()));
+                        expensesTable.addCell(
+                                expense.getDescription());
 
-                        document.add(
-                                        new Paragraph(
-                                                        "Categoria: "
-                                                                        + expense.getCategory()));
+                        expensesTable.addCell(
+                                expense.getCategory());
 
-                        document.add(
-                                        new Paragraph(
-                                                        "Valor: R$ "
-                                                                        + expense.getValue()));
+                        expensesTable.addCell(
+                                "R$ " + expense.getValue());
 
-                        document.add(
-                                        new Paragraph(
-                                                        "Data: "
-                                                                        + expense.getExpenseDate()));
-
-                        document.add(
-                                        new Paragraph(
-                                                        "--------------------------------"));
+                        expensesTable.addCell(
+                                expense.getExpenseDate().toString());
                 }
+
+                document.add(expensesTable);
 
                 document.add(
                                 new Paragraph(" "));
@@ -134,6 +144,13 @@ public class PdfService {
                                                 "TOTAL GERAL: R$ "
                                                                 + total,
                                                 sectionFont));
+
+                document.add(
+                        new Paragraph(" "));
+
+                document.add(
+                        new Paragraph(
+                                "Gerado automaticamente pelo Goslana"));
 
                 document.close();
 
