@@ -554,7 +554,7 @@ async function loadPlan() {
 
     if (savingsElement) {
         savingsElement.innerHTML = `
-            € ${formatEuro(currentPlan.currency)} ${currentPlan.currentSavings}
+            € ${formatEuro(currentPlan.currentSavings)}
             <br>
             <small>${formatCurrency(savingsBRL)}</small>
         `;
