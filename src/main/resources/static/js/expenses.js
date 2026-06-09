@@ -28,23 +28,8 @@ async function loadExpenses() {
         `;
     });
 
-    const targetBudget = currentPlan
-        ? currentPlan.targetBudget
-        : 30000;
-
-    // ✅ #1 — falta usa savingsBRL convertido corretamente
-    const totalSaved = getTotalSaved();
-
-    const savingsBRL =
-        convertToBRL(
-            totalSaved,
-            currentPlan.currency
-        );
-
-    const falta = Math.max(
-        0,
-        targetBudget - savingsBRL - total
-    );
+    const targetBudget =
+         dashboard.targetBudget;
 
     updateGoalAnalysis(total);
 
@@ -59,26 +44,44 @@ async function loadExpenses() {
     document.getElementById("totalGasto").textContent =
         formatCurrency(total);
 
-    // ✅ #2 — Meta Casamento exibe EUR + BRL (igual ao card Guardado)
-    const targetBudgetEUR = targetBudget / EUR_TO_BRL;
+    const targetBudgetEUR =
+        targetBudget / EUR_TO_BRL;
 
     document.getElementById("metaCasamento").innerHTML = `
-        € ${formatEuro(targetBudgetEUR)}
-        <br>
-        <small>${formatCurrency(targetBudget)}</small>
-    `;
+    € ${formatEuro(targetBudgetEUR)}
+    <br>
+    <small>${formatCurrency(targetBudget)}</small>
+`;
 
-    // Card Falta / Sobra — EUR + BRL
-    const sobra =
-        savingsBRL + total - targetBudget;
-
-    const faltaEUR =
-        falta / EUR_TO_BRL;
+    const remainingAmount =
+        dashboard.remainingAmount;
 
     const faltaElement =
         document.getElementById("falta");
 
-    if (sobra > 0) {
+    if (remainingAmount > 0) {
+
+        const faltaEUR =
+            remainingAmount / EUR_TO_BRL;
+
+        faltaElement.innerHTML = `
+        <span style="color:#ef4444">
+            € ${formatEuro(faltaEUR)}
+        </span>
+        <br>
+        <small style="color:#ef4444">
+            ${formatCurrency(remainingAmount)}
+        </small>
+        <br>
+        <small>
+            Ainda falta guardar
+        </small>
+    `;
+
+    } else {
+
+        const sobra =
+            Math.abs(remainingAmount);
 
         const sobraEUR =
             sobra / EUR_TO_BRL;
@@ -96,23 +99,8 @@ async function loadExpenses() {
             Acima da meta
         </small>
     `;
-
-    } else {
-
-        faltaElement.innerHTML = `
-        <span style="color:#ef4444">
-            € ${formatEuro(faltaEUR)}
-        </span>
-        <br>
-        <small style="color:#ef4444">
-            ${formatCurrency(falta)}
-        </small>
-        <br>
-        <small>
-            Ainda falta guardar
-        </small>
-    `;
     }
+
 
     renderChart(expenses);
     renderCategoryBudgets(expenses);
@@ -146,13 +134,14 @@ async function editExpense(id) {
         categoryFilter.innerHTML +=
             `<option value="${cat}">${cat}</option>`;
     });
+    await loadExpenses();
 
-    loadExpenses();
 }
 
 async function deleteExpense(id) {
     await fetch(`${API_URL}/${id}`, { method: "DELETE" });
-    loadExpenses();
+    await loadExpenses();
+
 }
 
 function renderExpenses(expenses) {

@@ -4,8 +4,7 @@ function getTotalSaved() {
         return 0;
     }
 
-    return currentPlan.currentSavings +
-        totalContributions;
+    return currentPlan.currentSavings;
 }
 
 async function savePlan() {
@@ -89,12 +88,12 @@ async function loadPlan() {
     const savingsElement =
         document.getElementById("currentSavingsValue");
 
-    if (savingsElement) {
+    if (savingsElement && dashboard) {
 
         savingsElement.innerHTML = `
-        € ${formatEuro(totalSaved)}
-        <br>
-        <small>${formatCurrency(savingsBRL)}</small>
+        ${formatCurrency(
+            dashboard.currentSavings
+        )}
     `;
     }
 }
@@ -194,6 +193,16 @@ function updateGoalAnalysis(total) {
     }
 }
 
-window.savePlan = savePlan;
+async function loadDashboard() {
+    const response =
+        await fetch("/api/dashboard");
 
+    dashboard =
+        await response.json();
+
+    console.log(dashboard);
+}
+
+window.savePlan = savePlan;
 window.loadPlan = loadPlan;
+window.loadDashboard = loadDashboard;

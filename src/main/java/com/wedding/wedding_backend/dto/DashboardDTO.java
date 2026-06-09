@@ -8,12 +8,8 @@ public class DashboardDTO {
     private BigDecimal targetBudget;
     private BigDecimal monthlySaving;
     private BigDecimal currentSavings;
-
     private BigDecimal totalExpenses;
-
     private BigDecimal remainingAmount;
-
-
 
     private LocalDate weddingDate;
 

@@ -10,12 +10,18 @@ import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.util.List;
 
+
+
 @Service
 public class DashboardService {
 
     private final WeddingPlanService weddingPlanService;
     private final ContributionRepository contributionRepository;
     private final ExpenseRepository expenseRepository;
+    private static final BigDecimal EUR_TO_BRL =
+            BigDecimal.valueOf(6.4);
+
+
 
     public DashboardService(
             WeddingPlanService weddingPlanService,
@@ -36,10 +42,21 @@ public class DashboardService {
             return new DashboardDTO();
         }
 
+        String currency =
+                plan.getCurrency();
+
         BigDecimal initialSavings =
                 BigDecimal.valueOf(
                         plan.getCurrentSavings()
                 );
+
+        if ("EUR".equals(currency)) {
+
+            initialSavings =
+                    initialSavings.multiply(
+                            EUR_TO_BRL
+                    );
+        }
 
         BigDecimal totalContributions =
                 contributionRepository.getTotalContributions();
@@ -81,15 +98,27 @@ public class DashboardService {
                 remainingAmount
         );
 
-        dashboard.setMonthlySaving(
+        BigDecimal monthlySaving =
                 BigDecimal.valueOf(
                         plan.getMonthlySaving()
-                )
+                );
+
+        if ("EUR".equals(currency)) {
+
+            monthlySaving =
+                    monthlySaving.multiply(
+                            EUR_TO_BRL
+                    );
+        }
+
+        dashboard.setMonthlySaving(
+                monthlySaving
         );
 
         dashboard.setWeddingDate(
                 plan.getWeddingDate()
         );
+
 
         return dashboard;
     }
