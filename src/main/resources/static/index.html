@@ -60,6 +60,29 @@
         Adicionar
     </button>
 
+    <button id="showCategoryForm">
+        Nova Categoria
+    </button>
+    <div id="categoryForm" style="display:none">
+
+        <input
+                type="text"
+                id="categoryName"
+                placeholder="Nome da categoria"
+        >
+
+        <input
+                type="number"
+                id="categoryBudget"
+                placeholder="Orçamento"
+        >
+
+        <button id="saveCategory">
+            Salvar Categoria
+        </button>
+
+    </div>
+
 </form>
 
 <button id="exportPdf">
@@ -161,6 +184,7 @@
     <script src="js/api.js"></script>
     <script src="js/utils.js"></script>
     <script src="js/charts.js"></script>
+    <script src="js/category-form.js"></script>
     <script src="js/expenses.js"></script>
     <script src="js/pdf.js"></script>
     <script src="js/category-budgets.js"></script>
