@@ -1,12 +1,14 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Wedding Planner</title>
 
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="css/style.css">
 </head>
+
 <body>
 
 <h1>Planejador de Casamento</h1>
@@ -15,80 +17,43 @@
     €1 = R$ 6,40
 </div>
 
-    <div class="planning-section">
+<div class="planning-section">
 
-        <input
-                type="number"
-                id="targetBudget"
-                placeholder="Meta do Casamento"
-        >
+    <input type="number" id="targetBudget" placeholder="Meta do Casamento">
 
-        <input
-                type="number"
-                id="currentSavings"
-                placeholder="Valor já guardado"
-        >
+    <input type="number" id="currentSavings" placeholder="Valor já guardado">
 
-        <input
-                type="number"
-                id="monthlySaving"
-                placeholder="Quanto conseguem guardar por mês"
-        >
-        <select id="currency">
+    <input type="number" id="monthlySaving" placeholder="Quanto conseguem guardar por mês">
+    <select id="currency">
 
-            <option value="BRL">
-                Real (R$)
-            </option>
+        <option value="BRL">
+            Real (R$)
+        </option>
 
-            <option value="EUR">
-                Euro (€)
-            </option>
+        <option value="EUR">
+            Euro (€)
+        </option>
 
-        </select>
+    </select>
 
-        <input
-                type="date"
-                id="weddingDate"
-        >
+    <input type="date" id="weddingDate">
 
-        <button
-                type="button"
-                id="savePlan"
-        >
-            Salvar Planejamento
-        </button>
+    <button type="button" id="savePlan">
+        Salvar Planejamento
+    </button>
 
-    </div>
+</div>
 
 
 <form id="expenseForm">
 
-    <input
-            type="text"
-            id="description"
-            placeholder="Descrição"
-            required
-    >
+    <input type="text" id="description" placeholder="Descrição" required>
 
-    <input
-            type="text"
-            id="category"
-            placeholder="Categoria"
-            required
-    >
+    <input type="text" id="category" placeholder="Categoria" required>
 
-    <input
-            type="number"
-            id="value"
-            placeholder="Valor"
-            required
-    >
+    <input type="number" id="value" placeholder="Valor" required>
 
-    <input
-            type="date"
-            id="expenseDate"
-            required
-    >
+    <input type="date" id="expenseDate" required>
 
     <button type="submit">
         Adicionar
@@ -140,11 +105,6 @@
     </div>
 
 
-
-
-
-
-
 </div>
 
 <div class="progress-container">
@@ -179,29 +139,30 @@
 
 <div class="chart-container">
 
-<h2 id="total">
-    Total: R$ 0
-</h2>
-<div class="filters">
+    <h2 id="total">
+        Total: R$ 0
+    </h2>
+    <div class="filters">
 
-    <input
-        type="text"
-        id="searchInput"
-        placeholder=" Buscar despesa"
-    >
+        <input type="text" id="searchInput" placeholder=" Buscar despesa">
 
-    <select id="categoryFilter">
+        <select id="categoryFilter">
 
-        <option value="">
-            Todas categorias
-        </option>
+            <option value="">
+                Todas categorias
+            </option>
 
-    </select>
+        </select>
 
-</div>
-<div id="expenses"></div>
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script src="app.js"></script>
+    </div>
+    <div id="expenses"></div>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="js/api.js"></script>
+    <script src="js/utils.js"></script>
+    <script src="js/expenses.js"></script>
+    <script src="js/dashboard.js"></script>
+    <script src="js/app.js"></script>
 
 </body>
+
 </html>

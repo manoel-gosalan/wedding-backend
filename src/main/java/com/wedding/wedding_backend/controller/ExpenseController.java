@@ -63,12 +63,11 @@ public class ExpenseController {
     }
 
 
-
     @GetMapping("/pdf")
     public ResponseEntity<byte[]> exportPdf()
             throws Exception {
 
-        System.out.println("PDF CHAMADO");
+        System.out.println("PDF CHAMADO TESTE LOCAL");
 
         DashboardDTO dashboard =
                 dashboardService.getDashboard();
@@ -86,6 +85,7 @@ public class ExpenseController {
                 .contentType(
                         MediaType.APPLICATION_PDF)
                 .body(pdf);
+
     }
 
 }
