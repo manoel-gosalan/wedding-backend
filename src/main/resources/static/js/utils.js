@@ -10,12 +10,6 @@ function normalizeCategory(category) {
         .toLowerCase();
 }
 
-function convertToBRL(value, currency) {
-    return currency === "EUR"
-        ? value * EUR_TO_BRL
-        : value;
-}
-
 function formatCurrency(value) {
     return Number(value).toLocaleString("pt-BR", {
         style: "currency",

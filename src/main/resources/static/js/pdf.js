@@ -1,5 +1,7 @@
 document.getElementById("exportPdf").addEventListener("click", async () => {
 
+    console.log("CLICOU NO PDF");
+
     const response = await fetch(`${API_URL}/pdf`);
 
     const blob = await response.blob();

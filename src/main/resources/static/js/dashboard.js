@@ -1,12 +1,3 @@
-function getTotalSaved() {
-
-    if (!currentPlan) {
-        return 0;
-    }
-
-    return currentPlan.currentSavings;
-}
-
 async function savePlan() {
     const targetBudget = Number(
         document.getElementById("targetBudget").value
@@ -76,15 +67,6 @@ async function loadPlan() {
         <small>${formatCurrency(currentPlan.targetBudget)}</small>
     `;
 
-    // ✅ #6 — usa convertToBRL
-    const totalSaved =
-        getTotalSaved();
-
-    const savingsBRL = convertToBRL(
-        totalSaved,
-        currentPlan.currency
-    );
-
     const savingsElement =
         document.getElementById("currentSavingsValue");
 
@@ -101,10 +83,8 @@ async function loadPlan() {
 function updateGoalAnalysis(total) {
     if (!currentPlan) return;
 
-    const monthlySaving = Number(currentPlan.monthlySaving) || 0;
-
-    // ✅ #6 — usa convertToBRL
-    const monthlySavingBRL = convertToBRL(monthlySaving, currentPlan.currency);
+    const monthlySaving =
+        dashboard.monthlySaving || 0;
 
     const weddingDateValue = currentPlan.weddingDate;
 
@@ -126,22 +106,14 @@ function updateGoalAnalysis(total) {
         return;
     }
 
-    // ✅ #1 — savings convertido antes de calcular falta
-    const totalSaved =
-        getTotalSaved();
+    const falta =
+        dashboard.remainingAmount;
 
-    const savingsBRL = convertToBRL(
-        totalSaved,
-        currentPlan.currency
-    );
+    const requiredPerMonth =
+        falta / monthsRemaining;
 
-    const falta = Math.max(
-        0,
-        currentPlan.targetBudget - savingsBRL - total
-    );
-
-    const requiredPerMonth = falta / monthsRemaining;
-    const difference = monthlySavingBRL - requiredPerMonth;
+    const difference =
+        monthlySaving - requiredPerMonth;
 
     const goalStatus = document.getElementById("goalStatus");
 
