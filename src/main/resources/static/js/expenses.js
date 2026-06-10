@@ -1,7 +1,4 @@
-console.log("EXPENSES 1");
-
 const form = document.getElementById("expenseForm");
-console.log("EXPENSES 2");
 
 
 async function loadExpenses() {
