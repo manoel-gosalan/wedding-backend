@@ -42,7 +42,11 @@ async function loadExpenses() {
         `${Math.min(percentual, 100)}%`;
 
     document.getElementById("totalGasto").textContent =
-        formatCurrency(total);
+        formatCurrency(
+            dashboard.totalExpenses
+        );
+    document.getElementById("total").textContent =
+        `Total: ${formatCurrency(total)}`;
 
     const targetBudgetEUR =
         targetBudget / EUR_TO_BRL;
@@ -181,6 +185,43 @@ form.addEventListener("submit", async (event) => {
     form.reset();
     loadExpenses();
 });
+
+document
+    .getElementById("toggleExpenses")
+    .addEventListener(
+        "click",
+        () => {
+
+            const section =
+                document.getElementById(
+                    "expensesSection"
+                );
+
+            if (
+                section.style.display ===
+                "none"
+            ) {
+
+                section.style.display =
+                    "block";
+
+                document.getElementById(
+                    "toggleExpenses"
+                ).textContent =
+                    "Ocultar Despesas Extras";
+
+            } else {
+
+                section.style.display =
+                    "none";
+
+                document.getElementById(
+                    "toggleExpenses"
+                ).textContent =
+                    "Mostrar Despesas Extras";
+            }
+        }
+    );
 
 window.loadExpenses = loadExpenses;
 window.editExpense = editExpense;
