@@ -1,4 +1,8 @@
+console.log("EXPENSES 1");
+
 const form = document.getElementById("expenseForm");
+console.log("EXPENSES 2");
+
 
 async function loadExpenses() {
     const response = await fetch(API_URL);
@@ -190,7 +194,7 @@ document
     .getElementById("toggleExpenses")
     .addEventListener(
         "click",
-        () => {
+        ()  => {
 
             const section =
                 document.getElementById(
@@ -220,7 +224,9 @@ document
                 ).textContent =
                     "Mostrar Despesas Extras";
             }
+            console.log("Clicou no btn")
         }
+
     );
 
 window.loadExpenses = loadExpenses;
