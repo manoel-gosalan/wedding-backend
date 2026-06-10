@@ -12,58 +12,60 @@
 
 <body>
 
-<h1>Planejador de Casamento</h1>
+    <h1>Planejador de Casamento</h1>
 
-<div id="exchangeRate">
-    €1 = R$ 6,40
-</div>
+    <div id="exchangeRate">
+        €1 = R$ 6,40
+    </div>
 
-<div class="planning-section">
+    <div class="planning-section">
 
-    <input type="number" id="targetBudget" placeholder="Meta do Casamento">
+        <input type="number" id="targetBudget" placeholder="Meta do Casamento">
 
-    <input type="number" id="currentSavings" placeholder="Valor já guardado">
+        <input type="number" id="currentSavings" placeholder="Valor já guardado">
 
-    <input type="number" id="monthlySaving" placeholder="Quanto conseguem guardar por mês">
-    <select id="currency">
+        <input type="number" id="monthlySaving" placeholder="Quanto conseguem guardar por mês">
+        <select id="currency">
 
-        <option value="BRL">
-            Real (R$)
-        </option>
+            <option value="BRL">
+                Real (R$)
+            </option>
 
-        <option value="EUR">
-            Euro (€)
-        </option>
+            <option value="EUR">
+                Euro (€)
+            </option>
 
-    </select>
+        </select>
 
-    <input type="date" id="weddingDate">
+        <input type="date" id="weddingDate">
 
-    <button type="button" id="savePlan">
-        Salvar Planejamento
-    </button>
+        <button type="button" id="savePlan">
+            Salvar Planejamento
+        </button>
 
-</div>
+    </div>
 
 
-<form id="expenseForm">
+    <form id="expenseForm">
 
-    <input type="text" id="description" placeholder="Descrição" required>
+        <input type="text" id="description" placeholder="Descrição" required>
 
-    <input type="text" id="category" placeholder="Categoria" required>
+        <input type="text" id="category" placeholder="Categoria" required>
 
-    <input type="number" id="value" placeholder="Valor" required>
+        <input type="number" id="value" placeholder="Valor" required>
 
-    <input type="date" id="expenseDate" required>
+        <input type="date" id="expenseDate" required>
 
-    <button type="submit">
-        Adicionar
-    </button>
+        <button type="submit">
+            Adicionar
+        </button>
+    </form>
 
     <button id="showCategoryForm">
         Nova Categoria
     </button>
-    <div id="categoryForm" style="display:none">
+
+    <form id="categoryForm" style="display:none">
 
         <input
                 type="text"
@@ -80,88 +82,86 @@
         <button id="saveCategory">
             Salvar Categoria
         </button>
+    </form>
+
+
+    <button id="exportPdf">
+        Exportar PDF
+    </button>
+
+
+    <hr>
+    <div class="dashboard">
+
+        <div class="metric">
+            <h3>Falta</h3>
+            <p id="falta">R$ 30000</p>
+        </div>
+
+        <div class="metric">
+
+            <h3>Valor Guardado</h3>
+
+            <p id="currentSavingsValue">
+                R$ 0
+            </p>
+
+        </div>
+
+        <div class="metric">
+
+            <h3>Margem Mensal</h3>
+
+            <p id="goalStatus">
+                -
+            </p>
+
+        </div>
+
+        <div class="metric">
+            <h3>Meta Casamento</h3>
+            <p id="metaCasamento">R$ 30000</p>
+        </div>
+
+        <div class="metric">
+            <h3>Total Gasto</h3>
+            <p id="totalGasto">R$ 0</p>
+        </div>
+
 
     </div>
 
-</form>
+    <div class="progress-container">
 
-<button id="exportPdf">
-    Exportar PDF
-</button>
-
-
-<hr>
-<div class="dashboard">
-
-    <div class="metric">
-        <h3>Falta</h3>
-        <p id="falta">R$ 30000</p>
-    </div>
-
-    <div class="metric">
-
-        <h3>Valor Guardado</h3>
-
-        <p id="currentSavingsValue">
-            R$ 0
-        </p>
+        <div class="progress-info">
+            <span>Progresso do orçamento</span>
+            <span id="percentual">0%</span>
+        </div>
+        <div class="progress-bar">
+            <div id="progressFill" class="progress-fill"></div>
+        </div>
 
     </div>
 
-    <div class="metric">
+    <button id="toggleChart">
+        Ver Gráfico
+    </button>
 
-        <h3>Margem Mensal</h3>
+    <div class="chart-container" id="chartContainer">
 
-        <p id="goalStatus">
-            -
-        </p>
+        <h2>Gastos por Categoria</h2>
+
+        <canvas id="categoryChart"></canvas>
 
     </div>
 
-    <div class="metric">
-        <h3>Meta Casamento</h3>
-        <p id="metaCasamento">R$ 30000</p>
-    </div>
+    <button id="toggleBudgets">
+        Ver Orçamento por Categoria
+    </button>
 
-    <div class="metric">
-        <h3>Total Gasto</h3>
-        <p id="totalGasto">R$ 0</p>
-    </div>
+    <div id="categoryBudgets"></div>
 
-
-</div>
-
-<div class="progress-container">
-
-    <div class="progress-info">
-        <span>Progresso do orçamento</span>
-        <span id="percentual">0%</span>
-    </div>
-    <div class="progress-bar">
-        <div id="progressFill" class="progress-fill"></div>
-    </div>
-
-</div>
-
-<button id="toggleChart">
-    Ver Gráfico
-</button>
-
-<div class="chart-container" id="chartContainer">
-
-    <h2>Gastos por Categoria</h2>
-
-    <canvas id="categoryChart"></canvas>
-
-</div>
-
-<button id="toggleBudgets">
-    Ver Orçamento por Categoria
-</button>
-
-<div id="categoryBudgets"></div>
-
-<div class="chart-container">
+    <div class="chart-container">
 
     <h2 id="total">
         Total: R$ 0
@@ -180,12 +180,52 @@
 
     </div>
     <div id="expenses"></div>
+    <h2>
+        Fornecedores
+    </h2>
+    <div id="vendors"></div>
+    <button
+            type="button"
+            id="showVendorForm">
+        Novo Fornecedor
+    </button>
+
+    <form id="vendorForm" style="display:none">
+
+        <input
+                id="vendorName"
+                placeholder="Fornecedor"
+        >
+
+        <input
+                id="vendorCategory"
+                placeholder="Categoria"
+        >
+
+        <input
+                id="totalAmount"
+                placeholder="Valor Total"
+        >
+
+        <input
+                id="paidAmount"
+                placeholder="Valor Pago"
+        >
+
+        <button
+                type="submit">
+            Salvar Fornecedor
+        </button>
+
+    </form>
+
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="js/api.js"></script>
     <script src="js/utils.js"></script>
     <script src="js/charts.js"></script>
     <script src="js/category-form.js"></script>
     <script src="js/expenses.js"></script>
+    <script src="js/vendor.js"></script>
     <script src="js/pdf.js"></script>
     <script src="js/category-budgets.js"></script>
     <script src="js/dashboard.js"></script>

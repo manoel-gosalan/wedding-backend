@@ -6,6 +6,7 @@ import com.wedding.wedding_backend.entity.WeddingPlan;
 import com.wedding.wedding_backend.repository.ContributionRepository;
 import com.wedding.wedding_backend.repository.ExpenseRepository;
 import org.springframework.stereotype.Service;
+import com.wedding.wedding_backend.repository.VendorRepository;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -21,16 +22,22 @@ public class DashboardService {
     private static final BigDecimal EUR_TO_BRL =
             BigDecimal.valueOf(6.4);
 
+    private final VendorRepository vendorRepository;
+
 
 
     public DashboardService(
             WeddingPlanService weddingPlanService,
             ContributionRepository contributionRepository,
-            ExpenseRepository expenseRepository
+            ExpenseRepository expenseRepository,
+            VendorRepository vendorRepository
+
     ) {
         this.weddingPlanService = weddingPlanService;
         this.contributionRepository = contributionRepository;
         this.expenseRepository = expenseRepository;
+        this.vendorRepository = vendorRepository;
+
     }
 
     public DashboardDTO getDashboard() {
@@ -66,8 +73,16 @@ public class DashboardService {
                         totalContributions
                 );
 
-        BigDecimal totalExpenses =
+        BigDecimal expenseTotal =
                 expenseRepository.getTotalExpenses();
+
+        BigDecimal vendorPaid =
+                vendorRepository.getTotalPaid();
+
+        BigDecimal totalExpenses =
+                expenseTotal.add(
+                        vendorPaid
+                );
 
         BigDecimal targetBudget =
                 BigDecimal.valueOf(
@@ -81,6 +96,7 @@ public class DashboardService {
 
         DashboardDTO dashboard =
                 new DashboardDTO();
+
 
         dashboard.setTargetBudget(
                 targetBudget

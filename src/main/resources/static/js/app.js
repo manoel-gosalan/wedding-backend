@@ -21,4 +21,5 @@ document
     await loadDashboard();
     await loadPlan();
     await loadExpenses();
+    await loadVendors();
 })();
