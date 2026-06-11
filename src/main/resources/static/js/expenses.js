@@ -108,7 +108,12 @@ async function loadExpenses() {
 
 
     renderChart(expenses);
-    renderCategoryBudgets(expenses);
+    if (typeof renderCategoryBudgets === "function") {
+
+        renderCategoryBudgets(
+            expenses
+        );
+    }
 }
 
 async function editExpense(id) {

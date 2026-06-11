@@ -176,5 +176,5 @@ async function loadDashboard() {
 }
 
 window.savePlan = savePlan;
-window.loadPlan = loadPlan;
 window.loadDashboard = loadDashboard;
+window.loadPlan = loadPlan;

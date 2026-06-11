@@ -34,6 +34,12 @@ public class WeddingPlanService {
         return repository.save(plan);
     }
 
+    public void delete(
+            Long id
+    ){
+        repository.deleteById(id);
+    }
+
     public List<WeddingPlan> findAll(){
         return repository.findAll();
     }

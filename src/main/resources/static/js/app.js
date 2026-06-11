@@ -17,9 +17,13 @@ document
     .getElementById("savePlan")
     .addEventListener("click", savePlan);
 
-(async () => {
-    await loadDashboard();
-    await loadPlan();
-    await loadExpenses();
-    await loadVendors();
-})();
+window.addEventListener(
+    "DOMContentLoaded",
+    async () => {
+        await loadExchangeRate();
+        await loadDashboard();
+        await loadPlan();
+        await loadExpenses();
+        await loadVendors();
+    }
+);

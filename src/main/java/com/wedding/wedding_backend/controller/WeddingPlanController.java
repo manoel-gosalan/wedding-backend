@@ -31,4 +31,20 @@ public class WeddingPlanController {
     ){
         return service.save(plan);
     }
+
+    @DeleteMapping("/{id}")
+    public void delete(
+            @PathVariable Long id
+    ) {
+        service.delete(id);
+    }
+
+    @PutMapping("/{id}")
+    public WeddingPlan update(
+            @PathVariable Long id,
+            @RequestBody WeddingPlan plan
+    ){
+        plan.setId(id);
+        return service.save(plan);
+    }
 }

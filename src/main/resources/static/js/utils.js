@@ -36,3 +36,28 @@ function getCategoryIcon(category) {
     };
     return icons[normalizeCategory(category)] || "📌";
 }
+
+async function loadExchangeRate() {
+
+    const response =
+        await fetch(
+            EXCHANGE_RATE_API
+        );
+
+    const data =
+        await response.json();
+    console.log(data);
+
+    EUR_TO_BRL =
+        Number(data.rate);
+
+    console.log(
+        "Cotação carregada:",
+        EUR_TO_BRL
+    );
+
+    document.getElementById(
+        "exchangeRate"
+    ).textContent =
+        `Cotação atual: €1 = R$ ${EUR_TO_BRL.toFixed(2)}`;
+}

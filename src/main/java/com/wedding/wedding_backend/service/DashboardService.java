@@ -1,7 +1,6 @@
 package com.wedding.wedding_backend.service;
 
 import com.wedding.wedding_backend.dto.DashboardDTO;
-import com.wedding.wedding_backend.entity.Expense;
 import com.wedding.wedding_backend.entity.WeddingPlan;
 import com.wedding.wedding_backend.repository.ContributionRepository;
 import com.wedding.wedding_backend.repository.ExpenseRepository;
@@ -9,7 +8,7 @@ import org.springframework.stereotype.Service;
 import com.wedding.wedding_backend.repository.VendorRepository;
 
 import java.math.BigDecimal;
-import java.util.List;
+
 
 
 
@@ -19,9 +18,7 @@ public class DashboardService {
     private final WeddingPlanService weddingPlanService;
     private final ContributionRepository contributionRepository;
     private final ExpenseRepository expenseRepository;
-    private static final BigDecimal EUR_TO_BRL =
-            BigDecimal.valueOf(6.4);
-
+    private final ExchangeRateService exchangeRateService;
     private final VendorRepository vendorRepository;
 
 
@@ -30,20 +27,24 @@ public class DashboardService {
             WeddingPlanService weddingPlanService,
             ContributionRepository contributionRepository,
             ExpenseRepository expenseRepository,
-            VendorRepository vendorRepository
+            VendorRepository vendorRepository,
+            ExchangeRateService exchangeRateService
 
     ) {
         this.weddingPlanService = weddingPlanService;
         this.contributionRepository = contributionRepository;
         this.expenseRepository = expenseRepository;
         this.vendorRepository = vendorRepository;
-
+        this.exchangeRateService = exchangeRateService;
     }
 
     public DashboardDTO getDashboard() {
 
         WeddingPlan plan =
                 weddingPlanService.findLatest();
+
+        BigDecimal eurToBrl = exchangeRateService.getEuroRate();
+
 
         if (plan == null) {
             return new DashboardDTO();
@@ -61,7 +62,7 @@ public class DashboardService {
 
             initialSavings =
                     initialSavings.multiply(
-                            EUR_TO_BRL
+                            eurToBrl
                     );
         }
 
@@ -75,9 +76,15 @@ public class DashboardService {
 
         BigDecimal expenseTotal =
                 expenseRepository.getTotalExpenses();
+        if (expenseTotal == null) {
+            expenseTotal = BigDecimal.ZERO;
+        }
 
         BigDecimal vendorPaid =
                 vendorRepository.getTotalPaid();
+        if (vendorPaid == null) {
+            vendorPaid = BigDecimal.ZERO;
+        }
 
         BigDecimal totalExpenses =
                 expenseTotal.add(
@@ -123,7 +130,7 @@ public class DashboardService {
 
             monthlySaving =
                     monthlySaving.multiply(
-                            EUR_TO_BRL
+                            eurToBrl
                     );
         }
 
