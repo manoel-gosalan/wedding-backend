@@ -12,6 +12,7 @@ async function savePlan() {
     const currency    = document.getElementById("currency").value;
 
     await fetch(PLAN_API, {
+
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -22,6 +23,14 @@ async function savePlan() {
             weddingDate,
         }),
     });
+    document.getElementById(
+        "planningSection"
+    ).style.display = "none";
+
+    document.getElementById(
+        "togglePlanning"
+    ).textContent =
+        "Editar Planejamento";
 
     await loadPlan();
     await loadExpenses();
@@ -72,11 +81,31 @@ async function loadPlan() {
 
     if (savingsElement && dashboard) {
 
+        const currentSavingsEUR =
+            dashboard.currentSavings /
+            EUR_TO_BRL;
+
         savingsElement.innerHTML = `
+    € ${formatEuro(currentSavingsEUR)}
+    <br>
+    <small>
         ${formatCurrency(
             dashboard.currentSavings
         )}
-    `;
+    </small>
+`;
+    }
+
+    if (currentPlan) {
+
+        document.getElementById(
+            "planningSection"
+        ).style.display = "none";
+
+        document.getElementById(
+            "togglePlanning"
+        ).textContent =
+            "Editar Planejamento";
     }
 }
 

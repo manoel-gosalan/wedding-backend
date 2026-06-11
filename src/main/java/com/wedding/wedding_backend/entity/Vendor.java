@@ -1,5 +1,7 @@
 package com.wedding.wedding_backend.entity;
 
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.PositiveOrZero;
 import jakarta.persistence.*;
 import java.math.BigDecimal;
 
@@ -11,12 +13,16 @@ public class Vendor {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @NotBlank
     private String name;
 
+    @NotBlank
     private String category;
 
+    @PositiveOrZero
     private BigDecimal totalAmount;
 
+    @PositiveOrZero
     private BigDecimal paidAmount;
 
     public Long getId() {
@@ -76,6 +82,10 @@ public class Vendor {
                 paidAmount
         );
     }
+
+
+
+
 
 
 }

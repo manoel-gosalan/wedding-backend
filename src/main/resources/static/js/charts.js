@@ -1,18 +1,47 @@
 let categoryChart = null;
 
-function renderChart(expenses) {
+function renderChart(expenses, allVendors) {
     const categories = {};
 
+    // despesas
     expenses.forEach((expense) => {
-        // ✅ #4 — normaliza antes de agrupar no gráfico
-        const category = normalizeCategory(expense.category);
-        const value = Number(expense.value);
 
-        categories[category] = (categories[category] || 0) + value;
+        const category =
+            normalizeCategory(
+                expense.category
+            );
+
+        const value =
+            Number(
+                expense.value
+            );
+
+        categories[category] =
+            (categories[category] || 0)
+            + value;
     });
 
-    const labels = Object.keys(categories);
-    const values = Object.values(categories);
+    // fornecedores
+    allVendors.forEach((vendor) => {
+
+        const category =
+            vendor.category;
+
+        const paid =
+            Number(
+                vendor.paidAmount || 0
+            );
+
+        categories[category] =
+            (categories[category] || 0)
+            + paid;
+    });
+
+    const labels =
+        Object.keys(categories);
+
+    const values =
+        Object.values(categories);
 
     if (categoryChart) categoryChart.destroy();
 

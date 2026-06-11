@@ -1,4 +1,3 @@
-console.log("vendor.js carregado");
 const VENDORS_API =
     "/api/vendors";
 
@@ -18,6 +17,7 @@ document
     });
 
 let allVendors = [];
+
 async function loadVendors() {
 
     const response =
@@ -29,7 +29,76 @@ async function loadVendors() {
     allVendors = vendors;
 
     renderVendors(vendors);
+    let totalContracted = 0;
+    let totalPaid = 0;
+    let totalRemaining = 0;
+
+    vendors.forEach((vendor) => {
+
+        totalContracted +=
+            Number(
+                vendor.totalAmount || 0
+            );
+
+        totalPaid +=
+            Number(
+                vendor.paidAmount || 0
+            );
+
+        totalRemaining +=
+            Number(
+                vendor.remainingAmount || 0
+            );
+    });
+    document.getElementById(
+        "vendorTotalContracted"
+    ).innerHTML = `
+    € ${formatEuro(
+        totalContracted / EUR_TO_BRL
+    )}
+    <br>
+    <small>
+        ${formatCurrency(
+        totalContracted
+    )}
+    </small>
+`;
+
+    document.getElementById(
+        "vendorTotalPaid"
+    ).innerHTML = `
+    € ${formatEuro(
+        totalPaid / EUR_TO_BRL
+    )}
+    <br>
+    <small>
+        ${formatCurrency(
+        totalPaid
+    )}
+    </small>
+`;
+
+    document.getElementById(
+        "vendorTotalRemaining"
+    ).innerHTML = `
+    € ${formatEuro(
+        totalRemaining / EUR_TO_BRL
+    )}
+    <br>
+    <small>
+        ${formatCurrency(
+        totalRemaining
+    )}
+    </small>
+`;
 }
+
+function getAllVendors() {
+    return allVendors;
+}
+
+window.getAllVendors =
+    getAllVendors;
 
 async function saveVendor() {
     console.log("SALVANDO FORNECEDOR");
@@ -216,6 +285,7 @@ vendorForm.addEventListener(
 
     }
 );
+
 
 window.loadVendors =
     loadVendors;

@@ -2,15 +2,18 @@ package com.wedding.wedding_backend.pdf;
 
 import com.itextpdf.text.*;
 import com.itextpdf.text.pdf.PdfWriter;
-
 import com.wedding.wedding_backend.dto.DashboardDTO;
 import com.wedding.wedding_backend.entity.Expense;
 import org.springframework.stereotype.Service;
 import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfPCell;
+import com.wedding.wedding_backend.entity.Vendor;
+
 
 import java.io.ByteArrayOutputStream;
 import java.util.List;
+import java.text.NumberFormat;
+import java.util.Locale;
 
 @Service
 public class PdfService {
@@ -20,12 +23,18 @@ public class PdfService {
 
         public byte[] generatePdf(
                 DashboardDTO dashboard,
-                List<Expense> expenses
+                List<Expense> expenses,
+                List<Vendor> vendors
+
         ) throws Exception {
 
                 ByteArrayOutputStream out = new ByteArrayOutputStream();
 
                 Document document = new Document();
+                NumberFormat currencyFormatter =
+                        NumberFormat.getCurrencyInstance(
+                                new Locale("pt", "BR")
+                        );
 
                 PdfWriter.getInstance(
                                 document,
@@ -75,28 +84,33 @@ public class PdfService {
 
                 summaryTable.addCell("Meta do Casamento");
                 summaryTable.addCell(
-                        "R$ " + dashboard.getTargetBudget());
+                        currencyFormatter.format(
+                                dashboard.getTargetBudget()
+                        ));
 
                 summaryTable.addCell("Valor Guardado");
                 summaryTable.addCell(
-                        "R$ " + dashboard.getCurrentSavings());
+                        currencyFormatter.format(
+                                dashboard.getCurrentSavings()
+                        ));
 
                 summaryTable.addCell("Total Gasto");
                 summaryTable.addCell(
-                        "R$ " + dashboard.getTotalExpenses());
+                        currencyFormatter.format(
+                                dashboard.getTotalExpenses()
+                        ));
 
                 summaryTable.addCell("Valor Restante");
                 summaryTable.addCell(
-                        "R$ " + dashboard.getRemainingAmount());
+                        currencyFormatter.format(
+                                dashboard.getRemainingAmount()
+                        ));
 
                 summaryTable.addCell("Data do Casamento");
                 summaryTable.addCell(
                         dashboard.getWeddingDate().toString());
 
                 document.add(summaryTable);
-
-                
-
 
                 document.add(
                                 new Paragraph(" "));
@@ -137,20 +151,107 @@ public class PdfService {
                 document.add(expensesTable);
 
                 document.add(
-                                new Paragraph(" "));
+                        new Paragraph(" ")
+                );
 
                 document.add(
-                                new Paragraph(
-                                                "TOTAL GERAL: R$ "
-                                                                + total,
-                                                sectionFont));
+                        new Paragraph(
+                                "FORNECEDORES",
+                                sectionFont
+                        )
+                );
+
+                document.add(
+                        new Paragraph(" ")
+                );
+                PdfPTable vendorsTable =
+                        new PdfPTable(5);
+
+                vendorsTable.setWidthPercentage(100);
+
+                vendorsTable.addCell("Fornecedor");
+                vendorsTable.addCell("Categoria");
+                vendorsTable.addCell("Total");
+                vendorsTable.addCell("Pago");
+                vendorsTable.addCell("Restante");
+
+                double totalVendorPaid = 0;
+                double totalVendorRemaining = 0;
+
+                for (Vendor vendor : vendors) {
+
+                        vendorsTable.addCell(
+                                vendor.getName()
+                        );
+
+                        vendorsTable.addCell(
+                                vendor.getCategory()
+                        );
+
+                        vendorsTable.addCell(
+                                "R$ " + vendor.getTotalAmount()
+                        );
+
+                        vendorsTable.addCell(
+                                "R$ " + vendor.getPaidAmount()
+                        );
+
+                        vendorsTable.addCell(
+                                "R$ " + vendor.getRemainingAmount()
+                        );
+
+                        totalVendorRemaining +=
+                                vendor.getRemainingAmount()
+                                        .doubleValue();
+
+                        totalVendorPaid +=
+                                vendor.getPaidAmount()
+                                        .doubleValue();
+                }
+                document.add(vendorsTable);
+
+                document.add(
+                        new Paragraph("-")
+                );
+
+                document.add(
+                        new Paragraph(
+                                "TOTAL DESPESAS EXTRAS: R$ "
+                                        + total,
+                                sectionFont
+                        )
+                );
+
+                document.add(
+                        new Paragraph(
+                                "TOTAL FORNECEDORES: R$ "
+                                        + totalVendorRemaining,
+                                sectionFont
+                        )
+                );
+
+                document.add(
+                        new Paragraph(
+                                "TOTAL FORNECEDORES PAGOS: R$ "
+                                        + totalVendorPaid,
+                                sectionFont
+                        )
+                );
+
+                document.add(
+                        new Paragraph(
+                                "TOTAL GERAL: R$ "
+                                        + (total + totalVendorPaid),
+                                sectionFont
+                        )
+                );
 
                 document.add(
                         new Paragraph(" "));
 
                 document.add(
                         new Paragraph(
-                                "Gerado automaticamente pelo Goslana"));
+                                "Esse é seu Plano financeiro atual."));
 
                 document.close();
 

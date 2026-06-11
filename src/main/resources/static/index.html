@@ -11,39 +11,67 @@
 </head>
 
 <body>
+<h1>
+    Planejador de Casamento
+</h1>
 
-    <h1>Planejador de Casamento</h1>
+<div id="exchangeRate">
+    Última atualização:
+    11/06/2026 23:58
+</div>
 
-    <div id="exchangeRate">
-        €1 = R$ 5.7
-    </div>
+<button
+        type="button"
+        id="togglePlanning">
 
-    <div class="planning-section">
+    Editar Planejamento
 
-        <input type="number" id="targetBudget" placeholder="Meta do Casamento">
+</button>
 
-        <input type="number" id="currentSavings" placeholder="Valor já guardado">
+<div
+        id="planningSection"
+        class="planning-section">
 
-        <input type="number" id="monthlySaving" placeholder="Quanto conseguem guardar por mês">
-        <select id="currency">
+    <input
+            type="number"
+            id="targetBudget"
+            placeholder="Meta do Casamento">
 
-            <option value="BRL">
-                Real (R$)
-            </option>
+    <input
+            type="number"
+            id="currentSavings"
+            placeholder="Valor já guardado">
 
-            <option value="EUR">
-                Euro (€)
-            </option>
+    <input
+            type="number"
+            id="monthlySaving"
+            placeholder="Quanto conseguem guardar por mês">
 
-        </select>
+    <select id="currency">
 
-        <input type="date" id="weddingDate">
+        <option value="BRL">
+            Real (R$)
+        </option>
 
-        <button type="button" id="savePlan">
-            Salvar Planejamento
-        </button>
+        <option value="EUR">
+            Euro (€)
+        </option>
 
-    </div>
+    </select>
+
+    <input
+            type="date"
+            id="weddingDate">
+
+    <button
+            type="button"
+            id="savePlan">
+
+        Salvar Planejamento
+
+    </button>
+
+</div>
 
 <!--
     <button id="showCategoryForm">
@@ -115,26 +143,52 @@
     <h2>
         Fornecedores
     </h2>
+    <div class="vendor-summary">
+
+        <div class="metric">
+            <h3>Total Contratado</h3>
+            <p id="vendorTotalContracted">
+                R$ 0
+            </p>
+        </div>
+
+        <div class="metric">
+            <h3>Total Pago</h3>
+            <p id="vendorTotalPaid">
+                R$ 0
+            </p>
+        </div>
+
+        <div class="metric">
+            <h3>Falta Pagar</h3>
+            <p id="vendorTotalRemaining">
+                R$ 0
+            </p>
+        </div>
+
+    </div>
+
+    <div class="actions-bar">
+
+        <button
+                type="button"
+                id="showVendorForm">
+            Novo Fornecedor
+        </button>
+
+        <button
+                type="button"
+                id="toggleExpenses">
+            Mostrar Despesas Extras
+        </button>
+
+        <button id="exportPdf">
+            Exportar PDF
+        </button>
+
+    </div>
 
     <div id="vendors"></div>
-
-    <button
-            type="button"
-            id="showVendorForm">
-        Novo Fornecedor
-    </button>
-
-    <button
-            type="button"
-            id="toggleExpenses">
-
-        Mostrar Despesas Extras
-
-    </button>
-
-    <button id="exportPdf">
-        Exportar PDF
-    </button>
 
     <form id="vendorForm" style="display:none">
 

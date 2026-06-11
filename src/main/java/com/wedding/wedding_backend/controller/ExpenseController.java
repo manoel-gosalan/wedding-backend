@@ -6,9 +6,11 @@ import com.wedding.wedding_backend.mapper.ExpenseMapper;
 import com.wedding.wedding_backend.pdf.PdfService;
 import com.wedding.wedding_backend.service.DashboardService;
 import com.wedding.wedding_backend.service.ExpenseService;
+import com.wedding.wedding_backend.service.VendorService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
+
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -24,6 +26,7 @@ public class ExpenseController {
     private final PdfService pdfService;
     private final ExpenseService service;
     private final DashboardService dashboardService;
+    private final VendorService vendorService;
 
 
     @GetMapping
@@ -41,11 +44,13 @@ public class ExpenseController {
     public ExpenseController(
             ExpenseService service,
             PdfService pdfService,
-            DashboardService dashboardService
-    ) {
+            DashboardService dashboardService,
+            VendorService vendorService) {
         this.service = service;
         this.pdfService = pdfService;
         this.dashboardService = dashboardService;
+        this.vendorService = vendorService;
+
     }
 
     @PutMapping("/{id}")
@@ -72,10 +77,13 @@ public class ExpenseController {
         DashboardDTO dashboard =
                 dashboardService.getDashboard();
 
+
         byte[] pdf =
                 pdfService.generatePdf(
                         dashboard,
-                        service.findAll()
+                        service.findAll(),
+                        vendorService.findAll()
+
                 );
 
         return ResponseEntity.ok()

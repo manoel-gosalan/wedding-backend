@@ -24,6 +24,28 @@ public class VendorService {
     public Vendor save(
             Vendor vendor
     ) {
+
+        if (
+                vendor.getPaidAmount()
+                        .compareTo(
+                                vendor.getTotalAmount()
+                        ) > 0
+        ) {
+
+            throw new RuntimeException(
+                    "Valor pago não pode ser maior que o valor total."
+            );
+        }
+
+        if (
+                vendor.getTotalAmount() == null ||
+                        vendor.getPaidAmount() == null
+        ) {
+            throw new RuntimeException(
+                    "Valores obrigatórios."
+            );
+        }
+
         return repository.save(vendor);
     }
 
@@ -32,4 +54,6 @@ public class VendorService {
     ) {
         repository.deleteById(id);
     }
+
+
 }

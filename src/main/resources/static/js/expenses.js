@@ -32,9 +32,12 @@ async function loadExpenses() {
     const targetBudget =
          dashboard.targetBudget;
 
-    updateGoalAnalysis(total);
+    updateGoalAnalysis(
+        dashboard.totalExpenses
+    );
 
-    const percentual = (total / targetBudget) * 100;
+    const percentual =
+        (dashboard.totalExpenses / targetBudget) * 100;
 
     document.getElementById("percentual").textContent =
         `${percentual.toFixed(1)}%`;
@@ -42,10 +45,17 @@ async function loadExpenses() {
     document.getElementById("progressFill").style.width =
         `${Math.min(percentual, 100)}%`;
 
-    document.getElementById("totalGasto").textContent =
-        formatCurrency(
-            dashboard.totalExpenses
-        );
+    document.getElementById(
+        "totalGasto"
+    ).innerHTML = `
+    € ${formatEuro(totalExpensesEUR)}
+    <br>
+    <small>
+        ${formatCurrency(
+        dashboard.totalExpenses
+    )}
+    </small>
+`;
     document.getElementById("total").textContent =
         `Total: ${formatCurrency(total)}`;
 
@@ -107,7 +117,7 @@ async function loadExpenses() {
     }
 
 
-    renderChart(expenses);
+    renderChart(expenses, getAllVendors());
     if (typeof renderCategoryBudgets === "function") {
 
         renderCategoryBudgets(

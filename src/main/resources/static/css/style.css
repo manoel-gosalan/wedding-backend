@@ -84,41 +84,43 @@ button:hover{
 
     border-radius:16px;
 
-    padding:20px;
+    padding:10px;
 
     box-shadow:
         0 4px 12px rgba(0,0,0,.08);
 
 }
+.card p {
+    margin: 6px 0;
+}
 
 .dashboard{
-    display:grid;
+    display: grid;
+    grid-template-columns:
+        repeat(auto-fit,minmax(260px,1fr));
     gap:15px;
+    align-items: start;
 }
 
 .metric{
 
-    flex:1;
-
-    min-width:220px;
+    min-width:120px;
 
     background:white;
 
-    padding:25px;
+    padding:12px;
 
     border-radius:16px;
 
-    box-shadow:
-        0 4px 12px rgba(0,0,0,.08);
-
+    height:auto;
 }
 
 .metric h3{
-    margin-bottom:18px;
+    margin-bottom:8px;
 }
 
 .metric p{
-    font-size:1.4rem;
+    font-size:0.8rem;
     font-weight:700;
 }
 
@@ -308,10 +310,32 @@ button:hover{
     font-size:14px;
 }
 
+.actions-bar {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-bottom: 10px;
+    margin-top:10px;
+}
+
+.vendor-summary {
+    display: grid;
+    grid-template-columns: repeat(
+        auto-fit,
+        minmax(220px, 1fr)
+    );
+    gap: 15px;
+}
+.vendor-summary .metric {
+    padding: 12px;
+}
+
+
 @media(max-width:768px){
 
-    .dashboard{
-        grid-template-columns:1fr;
+    .metric {
+        min-height: auto;
+        padding: 14px;
     }
 
 }
