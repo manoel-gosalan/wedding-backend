@@ -29,6 +29,9 @@ public class ExchangeRateService {
                         .retrieve()
                         .body(JsonNode.class);
 
+        System.out.println("RESPOSTA API:");
+        System.out.println(response);
+
         return new BigDecimal(
                 response
                         .get("EURBRL")
