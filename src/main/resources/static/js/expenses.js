@@ -4,6 +4,7 @@ const form = document.getElementById("expenseForm");
 async function loadExpenses() {
     const response = await fetch(API_URL);
     const expenses = await response.json();
+    const totalExpensesEUR = dashboard.totalExpenses / EUR_TO_BRL
     allExpenses = expenses;
 
     expensesDiv.innerHTML = "";
