@@ -39,6 +39,12 @@ function getCategoryIcon(category) {
 
 async function loadExchangeRate() {
 
+    const now = new Date();
+    const dateTime =
+        now.toLocaleString(
+            "pt-PT"
+        );
+
     const response =
         await fetch(
             EXCHANGE_RATE_API
@@ -58,6 +64,12 @@ async function loadExchangeRate() {
 
     document.getElementById(
         "exchangeRate"
-    ).textContent =
-        `Última atualização: ${EUR_TO_BRL.toFixed(2)}`;
+    ).innerHTML = `
+    €1 = R$ ${EUR_TO_BRL.toFixed(2)}
+    <br>
+    <small>
+        Última atualização:
+        ${dateTime}
+    </small>
+`;
 }
