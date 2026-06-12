@@ -192,22 +192,3 @@ Durante o desenvolvimento foram aplicados conceitos como:
 * Melhorias de UX e acessibilidade
 * Relatórios PDF avançados
 * Exportação para Excel
-
-## Screenshots
-
-### Dashboard Financeiro
-
-![Dashboard](screenshots/dashboard.png)
-
-### Gestão de Fornecedores
-
-![Fornecedores](screenshots/vendors.png)
-
-### Controle de Despesas
-
-![Despesas](screenshots/expenses.png)
-![Despesas](screenshots/expenses1.png)
-
-### Versão Mobile
-
-![Mobile](screenshots/mobile.png)
