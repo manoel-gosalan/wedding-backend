@@ -1,10 +1,12 @@
-# Wedding Financial Planner
+#  Wedding Financial Planner
 
-Sistema para planejamento financeiro de casamentos desenvolvido com Java, Spring Boot, PostgreSQL e JavaScript.
+Sistema para planejamento financeiro de casamentos, desenvolvido com Java, Spring Boot, PostgreSQL e JavaScript.
 
-O objetivo do projeto é ajudar casais a organizarem o orçamento do casamento, acompanharem despesas, fornecedores, contribuições e metas financeiras, incluindo suporte para planejamento em Real (R$) e Euro (€).
+O objetivo é ajudar casais a organizarem o orçamento do casamento, acompanharem despesas, monitorarem metas financeiras e planejarem aportes ao longo do tempo.
 
-## Funcionalidades
+---
+
+##  Funcionalidades
 
 ### Planejamento Financeiro
 
@@ -13,65 +15,49 @@ O objetivo do projeto é ajudar casais a organizarem o orçamento do casamento, 
 * Controle do valor poupado mensalmente
 * Data prevista do casamento
 * Análise automática da viabilidade da meta
-* Planejamento recolhível para melhor experiência de uso
-
-### Dashboard Financeiro
-
-* Valor total guardado
-* Total gasto
-* Valor restante para atingir a meta
-* Progresso financeiro
-* Margem mensal necessária
-* Comparação entre valor necessário e valor poupado
-* Exibição simultânea em EUR e BRL
 
 ### Controle de Despesas
 
 * Cadastro de despesas
 * Edição de despesas
 * Exclusão de despesas
-* Busca por descrição
 * Filtro por categoria
-* Controle de orçamento por categoria
+* Busca por descrição
 
-### Gestão de Fornecedores
+### Dashboard Financeiro
 
-* Cadastro de fornecedores
-* Controle de valor contratado
-* Controle de valor pago
-* Cálculo automático do saldo restante
-* Resumo financeiro dos fornecedores
-* Validações de negócio
+* Valor total gasto
+* Valor restante para atingir a meta
+* Progresso do orçamento
+* Margem mensal necessária
+* Comparação entre valor necessário e valor poupado
 
-### Contribuições
+### Conversão EUR → BRL
 
-* Registro de aportes financeiros
-* Soma automática das contribuições
-* Integração com o dashboard financeiro
+Pensado especialmente para casais que:
 
-### Conversão EUR / BRL
+* Recebem em Euro (€)
+* Pagam fornecedores em Real (R$)
 
-* Cotação em tempo real através de API externa
-* Exibição de valores em Euro e Real
-* Atualização automática da cotação
-
-### Relatórios
-
-* Exportação de relatório financeiro em PDF
-* Resumo financeiro consolidado
-* Inclusão de despesas e fornecedores
+O sistema realiza os cálculos considerando ambas as moedas.
 
 ### Visualização
 
+* Gráfico de gastos por categoria
+* Controle de orçamento por categoria
 * Dashboard responsivo
-* Gráficos de gastos por categoria
-* Interface adaptada para desktop e dispositivos móveis
 
-## Tecnologias Utilizadas
+### Relatórios
+
+* Exportação de resumo financeiro em PDF
+
+---
+
+##  Tecnologias Utilizadas
 
 ### Backend
 
-* Java 21
+* Java
 * Spring Boot
 * Spring Data JPA
 * PostgreSQL
@@ -86,23 +72,26 @@ O objetivo do projeto é ajudar casais a organizarem o orçamento do casamento, 
 ### Bibliotecas
 
 * Chart.js
-* iTextPDF
 
-## Arquitetura
+---
 
-O projeto segue uma arquitetura em camadas:
+##  Screenshots
 
-* Controller
-* Service
-* Repository
-* DTO
-* Entity
+Em breve serão adicionadas imagens do sistema.
 
-## Deploy
+---
 
-Aplicação hospedada no Render.
+##  Próximas Funcionalidades
 
-## Como Executar
+* Histórico de aportes
+* Cotação EUR/BRL em tempo real
+* Melhorias de UX e responsividade
+* Dashboard financeiro avançado
+* Relatórios PDF aprimorados
+
+---
+
+##  Como executar
 
 ### Backend
 
@@ -118,33 +107,20 @@ http://localhost:8080
 
 ### Banco de Dados
 
-Configure um banco PostgreSQL e ajuste o arquivo:
+Configurar PostgreSQL e ajustar:
 
-```text
+```properties
 application.properties
 ```
 
 com suas credenciais locais.
 
+---
+
 ## Objetivo do Projeto
 
-Este projeto nasceu para resolver um problema real: organizar financeiramente um casamento quando a renda principal está em Euro (€) e as despesas acontecem em Real (R$).
+Este projeto nasceu para resolver um problema real:
 
-Além da aplicação prática, o projeto faz parte da minha jornada de aprendizado em desenvolvimento de software utilizando Java, Spring Boot, PostgreSQL e desenvolvimento web.
+Casais que recebem em Euro (€), mas precisam organizar e pagar um casamento em Real (R$).
 
-# Screenshots
-
-(screenshots/Captura de tela de 2026-06-12 02-03-27.png)
-(screenshots/Captura de tela de 2026-06-12 02-03-36.png)
-(screenshots/Captura de tela de 2026-06-12 02-03-42.png)
-(screenshots/imagempc.png)
-
-
-(screenshots/vendors.png)
-
-
-
-(screenshots/expenses.png)
-
-
-(screenshots/mobile.png)
+Além de servir como ferramenta de planejamento financeiro, o projeto também faz parte da minha jornada de aprendizado em desenvolvimento de software utilizando Java e Spring Boot.
