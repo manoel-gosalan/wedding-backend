@@ -8,10 +8,11 @@ let dashboard = null;
 document
     .getElementById("searchInput")
     .addEventListener("input", applyFilters);
-
+/*
 document
     .getElementById("categoryFilter")
     .addEventListener("change", applyFilters);
+*/
 
 document
     .getElementById("savePlan")

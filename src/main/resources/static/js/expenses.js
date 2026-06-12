@@ -90,7 +90,7 @@ async function loadExpenses() {
         </small>
         <br>
         <small>
-            Ainda falta guardar
+            Ainda falta
         </small>
     `;
 
