@@ -59,5 +59,5 @@ async function loadExchangeRate() {
     document.getElementById(
         "exchangeRate"
     ).textContent =
-        `Cotação atual: €1 = R$ ${EUR_TO_BRL.toFixed(2)}`;
+        `Última atualização: ${EUR_TO_BRL.toFixed(2)}`;
 }
